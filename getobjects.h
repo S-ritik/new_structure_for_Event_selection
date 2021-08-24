@@ -189,7 +189,8 @@ void Anal_Leptop_PROOF::getAK4jets(std::vector<AK4Jet> &Jets, float ptcut=30, fl
     sJet.y = pfjetAK4y[ijet];
     sJet.phi = pfjetAK4phi[ijet];
     sJet.p4.SetPtEtaPhiM(sJet.pt,sJet.eta,sJet.phi,sJet.mass);
-  
+    sJet.inleppt = pfjetAK4inleppt[ijet];
+    sJet.delrlep = pfjetAK4delrlep[ijet];
     sJet.jetid = pfjetAK4jetID[ijet];
     sJet.jetid_tightlepveto = pfjetAK4jetID_tightlepveto[ijet];
     sJet.hadronFlavour = pfjetAK4hadronflav[ijet];
