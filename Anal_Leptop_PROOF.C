@@ -239,7 +239,7 @@ void Anal_Leptop_PROOF::SlaveBegin(TTree * /*tree*/)
     char lnamein[1000],ltitlein[1000];
     sprintf(lnamein,"hist_%s",names_genmatch_deltaR[lvar]);
     sprintf(ltitlein,"%s",titles_genmatch_deltaR[lvar]);
-    hist_genmatch_deltaR[lvar] = new TH1D(lnamein,ltitlein,60,0,6.5);
+    hist_genmatch_deltaR[lvar] = new TH1D(lnamein,ltitlein,60,0,1);
     hist_genmatch_deltaR[lvar]->Sumw2();		
   }
 
@@ -529,13 +529,13 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
     boosted = (LHEtops.size()>1 && LHEtops[0].pt>300. && LHEtops[1].pt>300);
     
 #ifdef E_MU_TTBar
-    if(!(DiLeptt && EMU && boosted))   return kFALSE;      //for signal EMU
+    if(!(DiLeptt && EMU/* && boosted*/))   return kFALSE;      //for signal EMU
     //if((DiLeptt && EMU && boosted)) return kFALSE; //for non-signal EMU TTbar
 #elif defined(E_E_TTBar)
-    if(!(DiLeptt && EE && boosted)) return kFALSE; //for signal EE
+    if(!(DiLeptt && EE/* && boosted*/)) return kFALSE; //for signal EE
     //if((DiLeptt && EE && boosted)) return kFALSE; //for non-signal EE TTbar
 #elif defined(MU_MU_TTBar) 
-    if(!(DiLeptt && MUMU && boosted)) return kFALSE; //for signal MUMU
+    if(!(DiLeptt && MUMU/* && boosted*/)) return kFALSE; //for signal MUMU
     //if((DiLeptt && MUMU && boosted)) return kFALSE; //for non-signal MUMU TTbar
 #endif
   } // if(isMC && isTT)
@@ -736,11 +736,12 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
 
   hist_prvar[3]->Fill(vleptons.size(), weight);
   //at least two leptons with pT > 30 GeV at this stage
+  hist_count->Fill(3,weight);
   if (vleptons.size()<2)  return kFALSE; 
   //// Condition on number of leptons is put here only. We will need at least two leptons for trigger matching
   if(Jets.size()>0)    hist_btag_cutflow1[2]->Fill(Jets[0].btag_DeepFlav,weight);
   if(Jets.size()>1)    hist_btag_cutflow2[2]->Fill(Jets[1].btag_DeepFlav,weight);
-  hist_count->Fill(3,weight);
+
   
   bool emu_ch = false;
   bool mumu_ch = false;
@@ -1357,13 +1358,10 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
   if( Jets.size()>0 && LJets.size()>0)  hist_2d_pt_vsbtagsc[2]->Fill(LJets[0].pt,Jets[0].btag_DeepFlav,weight);
   if( Jets.size()>1 && LJets.size()>1)  hist_2d_pt_vsbtagsc[3]->Fill(LJets[1].pt,Jets[1].btag_DeepFlav,weight);
   
-  hist_init[2]->Fill(nmuons,weight);
-  hist_init[3]->Fill(nelecs,weight);
-  hist_init[4]->Fill(PFMET,weight);
-  hist_init[5]->Fill(nprimi,weight);
-  hist_init[6]->Fill(Jets.size(),weight);
-  hist_init[7]->Fill(BJets.size(),weight);
-  hist_init[8]->Fill(LJets.size(),weight);
+  hist_init[2]->Fill(nprimi,weight);
+  hist_init[3]->Fill(Jets.size(),weight);
+  hist_init[4]->Fill(BJets.size(),weight);
+  hist_init[5]->Fill(LJets.size(),weight);
 
   hist_obs[0]->Fill(LJets[0].pt,weight);
   hist_obs[1]->Fill(LJets[0].y,weight);
@@ -1456,41 +1454,41 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
     if(lepcand_1.pdgId==13 && lepcand_2.pdgId==11) { fmucand = lepcand_1.p4; felcand = lepcand_2.p4;   }
     else if(lepcand_1.pdgId==11 && lepcand_2.pdgId==13) { fmucand = lepcand_2.p4; felcand = lepcand_1.p4;   }
     
-    hist_init[9]->Fill((fmucand + felcand).M(),weight);
-    hist_init[10]->Fill(fmucand.Pt(),weight);
-    hist_init[11]->Fill(fmucand.Eta(),weight);
-    hist_init[12]->Fill(fmucand.Phi(),weight);
+    hist_init[6]->Fill((fmucand + felcand).M(),weight);
+    hist_init[7]->Fill(fmucand.Pt(),weight);
+    hist_init[8]->Fill(fmucand.Eta(),weight);
+    hist_init[9]->Fill(fmucand.Phi(),weight);
     
-    hist_init[13]->Fill(felcand.Pt(),weight);
-    hist_init[14]->Fill(felcand.Eta(),weight);
-    hist_init[15]->Fill(felcand.Phi(),weight);
+    hist_init[10]->Fill(felcand.Pt(),weight);
+    hist_init[11]->Fill(felcand.Eta(),weight);
+    hist_init[12]->Fill(felcand.Phi(),weight);
 #elif defined(E_E_TTBar)
-    hist_init[9]->Fill((l1+l2).M(),weight);
-    hist_init[10]->Fill(l1.Pt(),weight);
-    hist_init[11]->Fill(l1.Eta(),weight);
-    hist_init[12]->Fill(l1.Phi(),weight);
+    hist_init[6]->Fill((l1+l2).M(),weight);
+    hist_init[7]->Fill(l1.Pt(),weight);
+    hist_init[8]->Fill(l1.Eta(),weight);
+    hist_init[9]->Fill(l1.Phi(),weight);
 
-    hist_init[13]->Fill(l2.Pt(),weight);
-    hist_init[14]->Fill(l2.Eta(),weight);
-    hist_init[15]->Fill(l2.Phi(),weight);
+    hist_init[10]->Fill(l2.Pt(),weight);
+    hist_init[11]->Fill(l2.Eta(),weight);
+    hist_init[12]->Fill(l2.Phi(),weight);
 #elif defined(MU_MU_TTBar)
-    hist_init[9]->Fill((l1+l2).M(),weight);
-    hist_init[10]->Fill(l1.Pt(),weight);
-    hist_init[11]->Fill(l1.Eta(),weight);
-    hist_init[12]->Fill(l1.Phi(),weight);
+    hist_init[6]->Fill((l1+l2).M(),weight);
+    hist_init[7]->Fill(l1.Pt(),weight);
+    hist_init[8]->Fill(l1.Eta(),weight);
+    hist_init[9]->Fill(l1.Phi(),weight);
     
-    hist_init[13]->Fill(l2.Pt(),weight);
-    hist_init[14]->Fill(l2.Eta(),weight);
-    hist_init[15]->Fill(l2.Phi(),weight);
+    hist_init[10]->Fill(l2.Pt(),weight);
+    hist_init[11]->Fill(l2.Eta(),weight);
+    hist_init[12]->Fill(l2.Phi(),weight);
 #endif
     if (Jets.size()>0 && Jets[0].btag_DeepFlav>deep_btag_cut) {
-      hist_init[16]->Fill(Jets[0].pt, weight);
-      hist_init[17]->Fill(Jets[0].eta, weight);
-      hist_init[18]->Fill(Jets[0].phi, weight);
+      hist_init[13]->Fill(Jets[0].pt, weight);
+      hist_init[14]->Fill(Jets[0].eta, weight);
+      hist_init[15]->Fill(Jets[0].phi, weight);
     } else if (Jets.size()>1 && Jets[1].btag_DeepFlav>deep_btag_cut) {
-      hist_init[16]->Fill(Jets[1].pt, weight);
-      hist_init[17]->Fill(Jets[1].eta, weight);
-      hist_init[18]->Fill(Jets[1].phi, weight);
+      hist_init[13]->Fill(Jets[1].pt, weight);
+      hist_init[14]->Fill(Jets[1].eta, weight);
+      hist_init[15]->Fill(Jets[1].phi, weight);
     }
 
     // end //                                                                            

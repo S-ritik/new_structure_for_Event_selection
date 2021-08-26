@@ -1790,7 +1790,7 @@ TH1D *hist_count=0;
     
   //TH1D *hist_new_var[15];
 	//GMA define nhist_in and use that
-	static const int nhist_in=19;
+	static const int nhist_in=16;
   TH1D *hist_init[nhist_in];
 
   static const int nobshist = 47;
@@ -1843,17 +1843,17 @@ TH1D *hist_count=0;
 
 	//const char *new_var_title[9] = {"M_{l1,l2}","rat_{l1,l2}","#delta#phi_{l1,l2}","l1p_{T}wrtj","l2p_{T}wrtj","MET","MET_{#eta}","#delta#phi_{l1,MET}","#delta#phi_{l2,MET}"};
 
-	const char *initnames[nhist_in] = {"matchN_l1","matchN_l2","nmu","nel","PFMET","N_PV_sel","NJets_AK4","NBJets_AK4","NJets_AK8","mll","l1pt","l1eta","l1phi","l2pt","l2eta","l2phi","bjetpt","bjeteta","bjetphi"};
+	const char *initnames[nhist_in] = {"matchN_l1","matchN_l2","N_PV_sel","NJets_AK4","NBJets_AK4","NJets_AK8","mll","l1pt","l1eta","l1phi","l2pt","l2eta","l2phi","bjetpt","bjeteta","bjetphi"};
 
-	const char *titlenames[nhist_in] = {"trigger matching for mu","trigger matching for el","nmu","nel","PFMET","# of Primary Vertices","# of AK4 jets","# of b tagged AK4 jets","# of AK8 jets","mll","l1pt","l1eta","l1phi","l2pt","l2eta","l2phi","bjet pT","bjet eta","bjet phi"};
+	const char *titlenames[nhist_in] = {"trigger matching for mu","trigger matching for el","# of Primary Vertices","# of AK4 jets","# of b tagged AK4 jets","# of AK8 jets","mll","l1pt","l1eta","l1phi","l2pt","l2eta","l2phi","bjet pT","bjet eta","bjet phi"};
 
 	//double new_var_low[9] = {0.0,0.0,-5.0,0.0,0.0,0.0,-2.5,-5.0,-5.0};//,0.0,0.0,0.0,0.0,0.0,0.0,0.0,300.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
 	//double new_var_up[9] = {500.0,2.0,5.0,1000.0,1000.0,500.0,2.5,5.0,5.0};//1000,3.15,3.15,3.15,500,500,3000,500,3.15,3.15,3.15,3.15,500,500,5.};
 	//int new_var_nbins[9] = {25,25,50,50,50,25,25,50,50};//30,25,25,25,25,25,30,25,25,25,25,25,25,25,25};
 
-	double ini_low[nhist_in] = {0.0,0.0,0.5,0.5,0.0,-0.1,0.5,0.5,0.5,0.0,25.0,-2.5,-5.0,25.0,-2.5,-5.0,25.0,-2.5,-5.0};
-	double ini_up[nhist_in] = {1.0,1.0,10.5,10.5,500,99.9,10.5,10.5,10.5,500.0,1000.0,2.5,5.0,1000.0,2.5,5.0,1000.0,2.5,5.0};
-	int ini_nbins[nhist_in] = {50,50,11,11,25,100,11,11,11,25,50,25,50,50,25,50,50,25,50};
+	double ini_low[nhist_in] = {0.0,0.0,-0.1,0.5,0.5,0.5,0.0,25.0,-2.5,-5.0,25.0,-2.5,-5.0,25.0,-2.5,-5.0};
+	double ini_up[nhist_in] = {1.0,1.0,99.9,10.5,10.5,10.5,500.0,1000.0,2.5,5.0,1000.0,2.5,5.0,1000.0,2.5,5.0};
+	int ini_nbins[nhist_in] = {50,50,100,11,11,11,25,50,25,50,50,25,50,50,25,50};
 
 	TH1D *hist_npv;
 	TH1D *hist_npv_nopuwt;
@@ -2137,6 +2137,12 @@ void Anal_Leptop_PROOF::Init(TTree *tree)
    fChain->SetBranchAddress("pfjetAK8elinsubjeta", pfjetAK8elinsubjeta, &b_pfjetAK8elinsubjeta);
    fChain->SetBranchAddress("pfjetAK8elinsubjphi", pfjetAK8elinsubjphi, &b_pfjetAK8elinsubjphi);
    fChain->SetBranchAddress("pfjetAK8elinsubjmass", pfjetAK8elinsubjmass, &b_pfjetAK8elinsubjmass);
+
+   fChain->SetBranchAddress("pfjetAK8muinsubjpt", pfjetAK8muinsubjpt, &b_pfjetAK8muinsubjpt);
+   fChain->SetBranchAddress("pfjetAK8muinsubjeta", pfjetAK8muinsubjeta, &b_pfjetAK8muinsubjeta);
+   fChain->SetBranchAddress("pfjetAK8muinsubjphi", pfjetAK8muinsubjphi, &b_pfjetAK8muinsubjphi);
+   fChain->SetBranchAddress("pfjetAK8muinsubjmass", pfjetAK8muinsubjmass, &b_pfjetAK8muinsubjmass);
+
 
    fChain->SetBranchAddress("pfjetAK8muinsubpt", pfjetAK8muinsubpt, &b_pfjetAK8muinsubpt);
    fChain->SetBranchAddress("pfjetAK8muinsubeta", pfjetAK8muinsubeta, &b_pfjetAK8muinsubeta);

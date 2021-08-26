@@ -327,6 +327,11 @@ void Anal_Leptop_PROOF::getAK8jets(std::vector<AK8Jet> &LJets, float ptcut=200, 
     LJet.haspfelectron = LJet.haspfmuon = false;
     LJet.matchAK4deepb = LJet.re_tvsb = LJet.rmu_tvsb = -99;
     
+     /*TString str;
+
+	 str = TString::Format(" %f %f %f %f %f %f ",LJet.muinsubpt , LJet.muinsubjpt, LJet.muinsubeta,LJet.muinsubphi,LJet.y,LJet.phi);
+	 if(gProofServ) gProofServ->SendAsynMessage(str);*/
+
     if(LJet.elinsubpt > 0. && LJet.elinsubjpt > 0.){
       if (delta2R(LJet.elinsubeta,LJet.elinsubphi,LJet.y,LJet.phi) < 0.8) {
 	LJet.haspfelectron = true;
