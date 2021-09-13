@@ -46,6 +46,7 @@ class AK4Jet {
     float jesdn_total;
     int   genmatch;
   */
+  int AK8_neighbor_index;
   TLorentzVector p4;
 };
 
@@ -391,27 +392,35 @@ float compute_HT(vector<AK4Jet>  & objs, float ptcut, float etacut){
 int get_nearest_AK4(vector<AK4Jet>  & objs, TLorentzVector tmp_vec, float minR = 0.8/*0.6*/) {
   // gives the index of AK4 jet nearest to the tmp_vec vector                                                       
   int nearest = -1;
-  float btag_score_min=-1;
+  float btag_score_max=-1;
   for(unsigned iobs=0; iobs<objs.size(); iobs++){
-    if(delta2R(objs[iobs].eta,objs[iobs].phi,tmp_vec.Eta(),tmp_vec.Phi()) < 0.8 && objs[iobs].btag_DeepFlav < btag_score_min){
-      btag_score_min = objs[iobs].btag_DeepFlav;
+    if(objs[iobs].AK8_neighbor_index>=0 ) continue;
+    if(delta2R(objs[iobs].y,objs[iobs].phi,tmp_vec.Rapidity(),tmp_vec.Phi()) < minR && objs[iobs].btag_DeepFlav > btag_score_max){
+      btag_score_max = objs[iobs].btag_DeepFlav;
       nearest = iobs;
     }
   }
+    if(nearest >=0) objs[nearest].AK8_neighbor_index = +1;
   return  nearest;
 }
 
 int get_nearest_lepton(vector<Lepton>  & objs, TLorentzVector tmp_vec, int lepton_pdgid=-1, float minR = 0.7) {
   // gives the index of lepton nearest to the tmp_vec vector                                  
-                          
+
   int nearest = -1;
   for(unsigned iobs=0; iobs<objs.size(); iobs++){
     if(lepton_pdgid>=0 && objs[iobs].pdgId!=lepton_pdgid) continue;
-    if(delta2R(objs[iobs].eta,objs[iobs].phi,tmp_vec.Eta(),tmp_vec.Phi()) < minR){
-      minR = delta2R(objs[iobs].eta,objs[iobs].phi,tmp_vec.Eta(),tmp_vec.Phi()) ;
+    if(objs[iobs].AK8_neighbor_index>=0 ) continue;
+    float tmpR = delta2R(objs[iobs].eta,objs[iobs].phi,tmp_vec.Rapidity(),tmp_vec.Phi());
+    if( tmpR < minR){
+      minR = tmpR;
       nearest = iobs;
     }
   }
+ /* TString str;
+ str = TString::Format("check %i near %i  %f",int(objs.size()),nearest,minR);
+	if(gProofServ) gProofServ->SendAsynMessage(str);*/
+  if(nearest >=0) objs[nearest].AK8_neighbor_index = +1;
   return  nearest;
 }
 int get_nearest_AK8Jet(vector<AK8Jet>  & objs, TLorentzVector tmp_vec, float minR = 0.7/*0.8*/) {

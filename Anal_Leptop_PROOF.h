@@ -1717,6 +1717,8 @@ float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, 
   double pu_rat18_dn[100] = {0,15.0557,67.8751,22.3278,14.1211,10.4821,7.88069,5.86513,4.31762,3.35551,2.78627,2.40097,2.16428,2.00485,1.9056,1.85092,1.82051,1.80608,1.78719,1.75544,1.71117,1.64481,1.57234,1.49261,1.42092,1.35612,1.3043,1.26517,1.23118,1.20443,1.18302,1.16596,1.14834,1.13047,1.11055,1.08517,1.05388,1.01479,0.96502,0.907499,0.841466,0.767187,0.68971,0.610695,0.530471,0.45611,0.385995,0.32355,0.268127,0.221267,0.181416,0.149012,0.122387,0.100955,0.0832931,0.0694147,0.0579993,0.0482614,0.0406839,0.0341693,0.0284128,0.0238208,0.0196651,0.0163071,0.0134164,0.0108213,0.00875349,0.00713274,0.00561523,0.00450669,0.00357902,0.00293888,0.00231295,0.00180802,0.00140385,0.00117654,0.000861839,0.000682485,0.000525487,0.000404909,0.00033922,0.000204219,0.000164688,0.000112084,8.12391e-05,5.70485e-05,3.2298e-05,2.61592e-05,1.02574e-05,3.96059e-06,2.16985e-06,1.85204e-06,5.36884e-07,6.60936e-07,3.78607e-07,1.19189e-07,4.4536e-08,2.4673e-08,3.47283e-08,5.35281e-09};
   
  
+   double pu_ratUL18[100] = {0.259884,0.223561,0.381037,0.489628,0.522993,0.507155,0.482735,0.461454,0.447782,0.439033,0.449886,0.47743,0.517608,0.564426,0.618908,0.678753,0.742106,0.808915,0.875028,0.935956,0.985031,1.02027,1.03986,1.04695,1.04456,1.04062,1.03793,1.03921,1.04531,1.05651,1.07181,1.09119,1.11281,1.13634,1.16021,1.18376,1.20516,1.22146,1.23095,1.22984,1.21792,1.1951,1.15675,1.10654,1.04226,0.972244,0.892157,0.811123,0.72623,0.645032,0.56595,0.493995,0.427171,0.370178,0.318241,0.274725,0.237453,0.203845,0.176215,0.151949,0.130797,0.112535,0.0969905,0.0826169,0.0692946,0.0586899,0.0492603,0.0407844,0.0336518,0.0273283,0.0224939,0.0180027,0.0140926,0.0113632,0.0090323,0.00707861,0.00547182,0.0042758,0.00333859,0.00185336,0.00142246,0.000955504,0.000678387,0.000578844,0.000357373,0.000265886,0.000180433,0.000167422,0.000091243,0.0000554,0.00003686,0.000029,0.00001185,0.00000481,0.00000443,0.00000657,0.0000017967,0.0000035,0.00000108};
+
   //TH1D *hist_obs_pu_sys[nobshist][2];
   
   
@@ -1730,14 +1732,14 @@ float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, 
 	
 TH1D *hist_count=0;
 	//GMA define all these histogrammes. Before you put the crit on these variables, look on those first.
-	static const int nprvar=21;	//GMA added these new variables (last three are for M_ll for three cases
+	static const int nprvar=22;	//GMA added these new variables (last three are for M_ll for three cases
 	TH1D* hist_prvar[nprvar]={0};
 
-	const char* prvar_name[nprvar] = {"pr_dummy","pr_nprime","pr_trigger","pr_nlepton","pr_lepmatch","pr_lepmat2","pr_leppt1","pr_charge","pr_nelec","pr_nmuon","pr_nak8","pr_nak4","pr_dr1","pr_dr2","pr_nbjets","pr_drbjAak8","pr_ptak4", "pr_melel", "pr_melmu", "pr_mmumu","pr_PFMET"};
+	const char* prvar_name[nprvar] = {"pr_dummy","pr_nprime","pr_trigger","pr_nlepton","pr_lepmatch","pr_lepmattrigger","pr_leppt1","pr_lepchargeproduct","pr_nelec","pr_nmuon","pr_nak8","pr_nak4","pr_dr_ak81_ak41","pr_dr_ak81_lep1","pr_dr_ak82_ak42","pr_dr_ak82_lep2","pr_nbjets","pr_ptak4", "pr_melel", "pr_melmu", "pr_mmumu","pr_PFMET"};
 
-	int prvar_bins[nprvar] = {100,    120,   128,   12,   128,    2, 120,   3,    10,   10,   10,   20, 120, 120, 10, 120,  120, 120,   120,   120, 120};
-	float prvar_low[nprvar] =  {0.0,   -0.5,  -0.5, -0.5,  -0.5, -0.5, 0.0, -1.5, -0.5, -0.5, -0.5, -0.5,   0,  0, -0.5,  0,    0,   0,   0,   0, 0};
-	float prvar_high[nprvar] ={100.0, 119.5, 127.5, 11.5, 127.5,  1.5, 360,  1.5,  9.5,  9.5,  9.5, 19.5, 4.8, 4.8, 9.5, 4.8, 360,  360, 360,  360, 1000};
+	int prvar_bins[nprvar] = {100,    101,   65,   12,   6,    2, 120,   3,    10,   10,   10,   20, 120, 120, 120, 120, 10,  120, 120,   120,   120, 120};
+	float prvar_low[nprvar] =  {0.0,   -0.5,  -0.5, -0.5,  -0.5, -0.5, 0.0, -1.5, -0.5, -0.5, -0.5, -0.5,  0,  0, 0,  0, -0.5,    0,   0,   0,   0, 0};
+	float prvar_high[nprvar] ={100.0, 100.5, 64.5, 11.5, 5.5,  1.5, 360,  1.5,  9.5,  9.5,  9.5, 19.5, 6.5, 6.5, 6.5, 6.5, 9.5, 360,  360, 360,  360, 800};
 
 	static const int ntypes=5;
 	static const int ntcount=3;
@@ -1814,7 +1816,7 @@ TH1D *hist_count=0;
 	};
 
 	double obs_low[nobshist] = {200,-2.5,0,0,0,0,-0.15,0,0,0,0,0,-1.0,-1.0,-0.5,-0.5,-0.5,-0.5,0,0,0,0,0,200,-2.5,0,0,0,0,-0.15,0,0,0,0,0,-1.0,-1.0,-0.5,-0.5,-0.5,-0.5,0,0,0,0,0,0};
-	double obs_up[nobshist] = {3100,2.5,300,1,1,300,0.15,1,1,1,1,1,1,1,1.5,1.5,1.5,1.5,5,5,5,5,5,3100,2.5,300,1,1,300,0.15,1,1,1,1,1,1,1,1.5,1.5,1.5,1.5,5,5,5,5,1,1};
+	double obs_up[nobshist] = {3100,2.5,300,1,1,500,0.15,1,1,1,1,1,1,1,1.5,1.5,1.5,1.5,5,5,5,5,5,3100,2.5,300,1,1,300,0.15,1,1,1,1,1,1,1,1.5,1.5,1.5,1.5,5,5,5,5,1,1};
 
 	int obs_nbins[nobshist] = {25,25,25,25,25,25,25,25,60,20,20,20,40,40,2,2,2,2,25,25,25,25
 														 ,25,25,25,25,25,25,25,25,25,60,20,20,20,40,40,2,2,2,2,25,25,25,25,25,25};
@@ -1851,8 +1853,8 @@ TH1D *hist_count=0;
 	//double new_var_up[9] = {500.0,2.0,5.0,1000.0,1000.0,500.0,2.5,5.0,5.0};//1000,3.15,3.15,3.15,500,500,3000,500,3.15,3.15,3.15,3.15,500,500,5.};
 	//int new_var_nbins[9] = {25,25,50,50,50,25,25,50,50};//30,25,25,25,25,25,30,25,25,25,25,25,25,25,25};
 
-	double ini_low[nhist_in] = {0.0,0.0,-0.1,0.5,0.5,0.5,0.0,25.0,-2.5,-5.0,25.0,-2.5,-5.0,25.0,-2.5,-5.0};
-	double ini_up[nhist_in] = {1.0,1.0,99.9,10.5,10.5,10.5,500.0,1000.0,2.5,5.0,1000.0,2.5,5.0,1000.0,2.5,5.0};
+	double ini_low[nhist_in] = {0.0,0.0,-0.1,0.5,0.5,0.5,0.0,25.0,-2.5,-3.15,25.0,-2.5,-3.15,25.0,-2.5,-3.15};
+	double ini_up[nhist_in] = {1.0,1.0,99.9,10.5,10.5,10.5,800.0,1000.0,2.5,3.15,1000.0,2.5,3.15,1000.0,2.5,3.15};
 	int ini_nbins[nhist_in] = {50,50,100,11,11,11,25,50,25,50,50,25,50,50,25,50};
 
 	TH1D *hist_npv;
@@ -1870,14 +1872,17 @@ TH1D *hist_count=0;
 
     const char *titles_genmatch_deltaR_score[nhistdrsc] = {"genmatching score of leading AK8 jet","genmatching score of sub leading AK8 jet","genmatching score of leading AK8 jet with btagging","genmatching score of sub leading AK8 jet with btagging"};
 
-    const static int nhistbtagcutsflow=19;
-    TH1D *hist_btag_cutflow1[nhistbtagcutsflow];
-    TH1D *hist_btag_cutflow2[nhistbtagcutsflow];
+    const static int ncutflow=19;
+    TH1D *hist_met_cutflow[ncutflow];
+
 
     TH2D *hist_2d_deltaR_vsbtagsc[2];
     TH2D *hist_2d_pt_vsbtagsc[4];
     TH2D *hist_2d_deltaR_vspt[2];
     TH2D* hist_prptbtag[2];
+
+    TH1D* hist_count_lep;
+
 	
 	float in_pfjetAK8NHadF;
 	float in_pfjetAK8neunhadfrac;
@@ -1969,7 +1974,7 @@ TH1D *hist_count=0;
   virtual void    getLeptons(std::vector<Lepton> &vleptons, std::vector<Muon> vmuons, std::vector<Electron> velectrons, float pt_cut);
   virtual void    getAK4jets(std::vector<AK4Jet> &Jets, float ptcut, float etacut, bool isMC, int maxsize);
   virtual void    getAK8jets(std::vector<AK8Jet> &LJets, float ptcut, float etacut, bool isMC, int maxsize);
-  virtual void    LeptonJet_cleaning(std::vector<Lepton> Leptons, float dR_cut);
+  virtual void    LeptonJet_cleaning(std::vector <Electron> velectrons,std::vector <Muon> vmuons, float dR_cut);
   virtual void    getPartons(std::vector<GenParton> &GenPartons, int maxsize);
   virtual void    getLHETops(std::vector<GenParton> &LHETops, std::vector<GenParton> GenPartons);
   virtual void    getGENTops(vector<TopQuark> &gentops, vector<GenParton> genpartons);

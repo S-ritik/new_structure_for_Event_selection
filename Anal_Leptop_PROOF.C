@@ -27,9 +27,9 @@
 #include <string>
 #include <TProofServ.h>
 
-#define E_MU_TTBar
+//#define E_MU_TTBar
 //#define E_E_TTBar
-//#define MU_MU_TTBar
+#define MU_MU_TTBar
 
 void Anal_Leptop_PROOF::Begin(TTree * /*tree*/)
 {
@@ -220,21 +220,13 @@ void Anal_Leptop_PROOF::SlaveBegin(TTree * /*tree*/)
     hist_obs_btag[lvar]->Sumw2();
   }
 
-  for(int lvar=0; lvar<nhistbtagcutsflow; lvar++){
+  for(int lvar=0; lvar<ncutflow; lvar++){
     char lnamein[1000],ltitlein[1000];
-    sprintf(lnamein,"hist_btag_score_ak41_cut_%s",((string)to_string(lvar)).c_str());
-    sprintf(ltitlein,"btag score of leading AK8 jet after cut no %s",((string)to_string(lvar+1)).c_str());
-    hist_btag_cutflow1[lvar] = new TH1D(lnamein,ltitlein,60,0,1);
-    hist_btag_cutflow1[lvar]->Sumw2();		
-  }
-  for(int lvar=0; lvar<nhistbtagcutsflow; lvar++){
-    char lnamein[1000],ltitlein[1000];
-    sprintf(lnamein,"hist_btag_score_ak42_cut_%s",((string)to_string(lvar)).c_str());
-    sprintf(ltitlein,"btag score of sub leading AK8 jet after cut no %s",((string)to_string(lvar+1)).c_str());
-    hist_btag_cutflow2[lvar] = new TH1D(lnamein,ltitlein,60,0,1);
-    hist_btag_cutflow2[lvar]->Sumw2();		
-  }
-  
+    sprintf(lnamein,"hist_MET_cut_%s",((string)to_string(lvar)).c_str());
+    sprintf(ltitlein,"MET after cut no %s",((string)to_string(lvar+1)).c_str());
+    hist_met_cutflow[lvar] = new TH1D(lnamein,ltitlein,120,0,800);
+    hist_met_cutflow[lvar]->Sumw2();		
+  }  
   for(int lvar=0; lvar<nhistdeltaR; lvar++){
     char lnamein[1000],ltitlein[1000];
     sprintf(lnamein,"hist_%s",names_genmatch_deltaR[lvar]);
@@ -309,6 +301,9 @@ void Anal_Leptop_PROOF::SlaveBegin(TTree * /*tree*/)
 
   hist_count = new TH1D("Counter","Counter",21,0.5,21.5);
   hist_count->Sumw2();  
+
+  hist_count_lep= new TH1D("hist_decay_tt","Decay channel of ttbar",5,-0.5,4.5);
+  hist_count_lep->Sumw2();
   
   reader1 = new TMVA::Reader( "BDTG_Re" );
   reader1->AddVariable( "selpfjetAK8NHadF", &in_pfjetAK8NHadF);
@@ -414,17 +409,16 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
   }
   //Tout->Fill();
   
-   
-  /*	 TString str;                                                            
-     
-	 str = TString::Format("check start evt %d ]]]",ievt);          
+  TString str;                                                            
+
+  /*	 str = TString::Format("check start evt %d ]]]",ievt);          
 	 if(gProofServ) gProofServ->SendAsynMessage(str);
   */
   
   // event selection starts
   hist_prvar[1]->Fill(nprimi,weight);
   if (nprimi<1)  return kFALSE;
-
+  hist_met_cutflow[0]->Fill(PFMET,weight);
   hist_count->Fill(1,weight);
   hist_npv_nopuwt->Fill(nprimi,weight);
   
@@ -462,11 +456,11 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
   itrig_onlysinglee = (!hlt_Mu37Ele27 && !hlt_Mu27Ele37 && !hlt_Mu37TkMu27 && !hlt_DoubleEle25 && !hlt_Mu50 && hlt_Ele50_PFJet165);
 		
   if(!itrig_pass) return kFALSE; //event should at least fire a dileptonic/single lepton trigger            
-  
+
   // end of basic trigger criterion //
 
   hist_count->Fill(2,weight);
-
+  hist_met_cutflow[1]->Fill(PFMET,weight);
   // Get generator-level particles //
        
   vector<GenParton> genpartons;
@@ -481,25 +475,25 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
     for(int igen=0; igen<ngenparticles; igen++){
       if(genpartpdg[igen]==6  ) {topblep[0][0]=igen;}
       if(genpartpdg[igen]==-6 ) {topblep[1][0]=igen;}
-      if( (genpartpdg[igen]==11||genpartpdg[igen]==13||genpartpdg[igen]==15) && genpartmompdg[igen]==-24 && genpartgrmompdg[igen]==-6 ) { topblep[1][2]=igen; }  //lep index at 1 and b quark index at 0
+      if( (genpartpdg[igen]==11||genpartpdg[igen]==13||genpartpdg[igen]==15) && genpartmompdg[igen]==-24 ) { topblep[1][2]=igen; }  //lep index at 1 and b quark index at 0
       if(genpartpdg[igen]==-5 && genpartmompdg[igen]==-6) { topblep[1][1]=igen; }
-      if( (genpartpdg[igen]==-11||genpartpdg[igen]==-13||genpartpdg[igen]==-15) && genpartmompdg[igen]==24 && genpartgrmompdg[igen]==6 ) {  topblep[0][2]=igen; }
+      if( (genpartpdg[igen]==-11||genpartpdg[igen]==-13||genpartpdg[igen]==-15) && genpartmompdg[igen]==24 ) {  topblep[0][2]=igen; }
       if(genpartpdg[igen]==5 && genpartmompdg[igen]==6) {  topblep[0][1]=igen; }
     }
   }
   if(isMC && isTT){
     // Get GEN-level top quarks                                                         
-       
+
     getLHETops(LHEtops,genpartons); // before shower (get original top quarks which have decayed) --> will be usedto derive top pt reweighting                                   
-              
-                             
+
     getGENTops(gentops,genpartons); // after shower (get top quarks from its daughters) --> will tell details about the signature of ttbar events at GEN level
-    
+
     nleptop = nhadtop = 0;
     int leptop_id_daught[2];
     
     for(auto & top: gentops){
       if(abs(top.daughter[0].pdgId)==11 || abs(top.daughter[0].pdgId)==13 || abs(top.daughter[0].pdgId)==15){
+
 	leptop_id_daught[nleptop] = abs(top.daughter[0].pdgId);
 	nleptop++;
       }
@@ -507,7 +501,7 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
 	nhadtop++;
       }
     }
-  
+    
     // tagging top structure of events //
     DiLeptt = SemiLeptt = Hadtt = EE = MUMU = EMU = EJets = MUJets = TauTau = ETau = MuTau = false;
     if(nleptop==2 && nhadtop==0) { DiLeptt = true; }
@@ -525,21 +519,22 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
     if(SemiLeptt && abs(leptop_id_daught[0])==13) { MUJets = true; }
     if(SemiLeptt && abs(leptop_id_daught[0])==15) { TAUJets = true; }
 
-    bool boosted = false;
-    boosted = (LHEtops.size()>1 && LHEtops[0].pt>300. && LHEtops[1].pt>300);
+    hist_count_lep->Fill(int(DiLeptt)*3+int(SemiLeptt)*2+int(Hadtt),weight);
     
+    bool boosted = false;
+    //    boosted = (LHEtops.size()>1 && LHEtops[0].pt>300. && LHEtops[1].pt>300);
+
 #ifdef E_MU_TTBar
     if(!(DiLeptt && EMU/* && boosted*/))   return kFALSE;      //for signal EMU
-    //if((DiLeptt && EMU && boosted)) return kFALSE; //for non-signal EMU TTbar
+    //if((DiLeptt && EMU/* && boosted*/)) return kFALSE; //for non-signal EMU TTbar
 #elif defined(E_E_TTBar)
     if(!(DiLeptt && EE/* && boosted*/)) return kFALSE; //for signal EE
-    //if((DiLeptt && EE && boosted)) return kFALSE; //for non-signal EE TTbar
+    //if((DiLeptt && EE/* && boosted*/)) return kFALSE; //for non-signal EE TTbar
 #elif defined(MU_MU_TTBar) 
     if(!(DiLeptt && MUMU/* && boosted*/)) return kFALSE; //for signal MUMU
-    //if((DiLeptt && MUMU && boosted)) return kFALSE; //for non-signal MUMU TTbar
+    //if((DiLeptt && MUMU/* && boosted*/)) return kFALSE; //for non-signal MUMU TTbar
 #endif
   } // if(isMC && isTT)
-
   //Get RECO-level objects //
   //First sorted out electron and muon
   
@@ -549,7 +544,8 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
   }
   //Here you get electrons with your criteria
   vector <Electron> velectrons;
-  getelectrons(velectrons,lepton_pt_cut,absetacut);    // lepton_pt_cut & absetacut defined in Proof.h 
+  getelectrons(velectrons,25.0,absetacut);    // lepton_pt_cut & absetacut defined in Proof.h
+  nelecs = velectrons.size();
   
   //Some histograms before getting muons with analysis criteria
   for(int mu=0; mu<nmuons; mu++){
@@ -558,7 +554,8 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
 
   //Here you get muons with your criteria
   vector <Muon> vmuons;
-  getmuons(vmuons,lepton_pt_cut,absetacut);
+  getmuons(vmuons,25.0,absetacut);
+  nmuons = vmuons.size();
   
   //Make lepton collection from electrons & muons (using only common variables)
   vector <Lepton> vleptons;
@@ -586,19 +583,19 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
   }
 
    //Perform lepton-jet cleaning
-    for(int ijet=0; ijet < npfjetAK4; ijet++)
+  for(int ijet=0; ijet < npfjetAK4; ijet++)
     {
       pfjetAK4delrlep[ijet] = -99; // defined in Proof.h 
       pfjetAK4inleppt[ijet] = 0;
     }
-  LeptonJet_cleaning(vleptons,0.25);
+    
+  //  LeptonJet_cleaning(velectrons,vmuons,0.4);
   
   //Here you get AK4 jets with your criteria                                     
   vector <AK4Jet> Jets;
   getAK4jets(Jets,AK4jet_pt_cut,absetacut,isMC);
 
-   if(Jets.size()>0)    hist_btag_cutflow1[0]->Fill(Jets[0].btag_DeepFlav,weight);
-  if(Jets.size()>1)    hist_btag_cutflow2[0]->Fill(Jets[1].btag_DeepFlav,weight);
+
   
   //Get b-tagged jets from AK4 jets                                            
   vector <AK4Jet> BJets;
@@ -611,16 +608,16 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
   }
   
   //Fill similar histograms for largejet as did early for other objects
-  for(int ijet=0; ijet<npfjetAK8; ijet++){                                       
+  /*for(int ijet=0; ijet<npfjetAK8; ijet++){                                       
     if(!pfjetAK8jetID[ijet]) continue;                                           
-    pfjetAK8pt[ijet] *= pfjetAK8JEC[ijet] ;                                      
-    pfjetAK8mass[ijet] *= pfjetAK8JEC[ijet];
+      pfjetAK8pt[ijet] *= pfjetAK8JEC[ijet] ;                                      
+     pfjetAK8mass[ijet] *= pfjetAK8JEC[ijet];
     if(isMC){                                                                    
-      pfjetAK8pt[ijet] *= (1+pfjetAK8reso[ijet]) ;                               
-      pfjetAK8mass[ijet] *= (1+pfjetAK8reso[ijet]) ;
+      pfjetAK8pt[ijet] *= max(float(0.0),(1+pfjetAK8reso[ijet])) ;                               
+      pfjetAK8mass[ijet] *= max(float(0.0),(1+pfjetAK8reso[ijet])) ;
     }                                                                            
     hist_prptvar[0][min(ntcount-1,ijet)]->Fill(min(float(2.99), max(float(-2.99), pfjetAK8y[ijet])), min(ybins[nybin]-1.0, max(ybins[0]+0.1, double(pfjetAK8pt[ijet]))),weight);
-  }
+    }*/
   
   //Here you get AK8 jets with your criteria 
   vector <AK8Jet> LJets;
@@ -633,35 +630,49 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
       TopAssignment_toJet(LJets,LHEtops,gentops);
     }
   }
-  
+
+     
   //Get index of AK8 jet nearest to each lepton                                  
   if (LJets.size()>0) {
-    for(auto & lep: vleptons){
+    /*    for(auto & lep: vleptons){
      lep.AK8_neighbor_index = get_nearest_AK8Jet(LJets,lep.p4);
-    }
-  }  
-  
-  if(LJets.size()>0) {
+     }*/
+    
     for(unsigned ijet=0; ijet<Jets.size(); ijet++){
       double dr = delta2R(LJets[0].y,LJets[0].phi,Jets[ijet].y,Jets[ijet].phi);
       hist_prptangle[2]->Fill(LJets[0].pt,dr,weight);
     }
-    if (LJets.size()>1 && Jets.size()>1) {
+    if (LJets.size()>1 /*RSA && Jets.size()>1*/) {
       for(unsigned ijet=0; ijet<Jets.size(); ijet++){
 	double dr2 = delta2R(LJets[1].y,LJets[1].phi,Jets[ijet].y,Jets[ijet].phi);
 	hist_prptangle[3]->Fill(LJets[1].pt,dr2,weight);
       }
     }
     //Get indices of nearest lepton, AK4 jet for each AK8 jet                    
-    for(auto & jet: LJets){
+    //for(auto & jet: LJets){
+    
+
+    for(int ijet=0;ijet<min(2,int(LJets.size()));ijet++){
       //Match lepton with AK8 jets
-      jet.match_lepton_index = get_nearest_lepton(vleptons,jet.p4);
-      // Match AK4 jets with AK8 jets //                                         
-      jet.match_AK4_index  = get_nearest_AK4(Jets,jet.p4);
-      if(jet.match_AK4_index>=0 && jet.match_AK4_index<int(Jets.size())){
-        jet.matchAK4deepb = Jets[jet.match_AK4_index].btag_DeepFlav;
+      LJets[ijet].match_lepton_index = get_nearest_lepton(vleptons,LJets[ijet].p4);
+      if (LJets[ijet].match_lepton_index >=0 && ijet!=LJets[ijet].match_lepton_index && ijet<int(vleptons.size())) {
+	Lepton tmplep = vleptons[LJets[ijet].match_lepton_index];
+	vleptons.erase(vleptons.begin() + LJets[ijet].match_lepton_index);
+	vleptons.insert(vleptons.begin()+ijet, tmplep);
+	}
+
+      // Matched highest b tag AK4 jets  with AK8 jets //                                         
+      LJets[ijet].match_AK4_index = get_nearest_AK4(Jets,LJets[ijet].p4);
+      if(LJets[ijet].match_AK4_index>=0 && LJets[ijet].match_AK4_index<int(Jets.size())){
+        LJets[ijet].matchAK4deepb = Jets[LJets[ijet].match_AK4_index].btag_DeepFlav;	
+      }
+      if (LJets[ijet].match_AK4_index >=0 && ijet!=LJets[ijet].match_AK4_index && ijet<int(Jets.size())) {
+	AK4Jet tmpjet = Jets[LJets[ijet].match_AK4_index];
+	Jets.erase(Jets.begin() + LJets[ijet].match_AK4_index);
+	Jets.insert(Jets.begin() + ijet, tmpjet);
       }
     }
+
     //Debarati : Keeping histograms of GMA to see the distributions before selection
       for (int jk=0; jk<(int)vleptons.size(); jk++) {
       int ityp = (vleptons[jk].lepton_id==2) ? 4 : 5;
@@ -679,47 +690,19 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
 	hist_2d_deltaR_vsbtagsc[1]->Fill(j2_btag_sc_ptsort,delta2R(LJets[1].y, LJets[1].phi, Jets[1].eta, Jets[1].phi),weight);
 	hist_2d_pt_vsbtagsc[1]->Fill(Jets[1].pt,j2_btag_sc_ptsort,weight);
       }
-
+      //hist_count_lep->Fill(LJets[0].match_lepton_index+1);
       //Debarati : Adding GMA concept of ordering vleptons, AK4 wrt closest to leading two AK8 jets
-      int ivarl(0), ivarj(0);//Keeping it in new structure to keep GMA histograms
-      if (LJets[0].match_lepton_index >=0) {
-	Lepton tmplep = vleptons[LJets[0].match_lepton_index];
-	vleptons.erase(vleptons.begin() + LJets[0].match_lepton_index);
-	vleptons.insert(vleptons.begin(), tmplep);
-	ivarl = 1;
-      }
-      
-      if (LJets[0].match_AK4_index >=0) {
-	AK4Jet tmpjet = Jets[LJets[0].match_AK4_index];
-	Jets.erase(Jets.begin() + LJets[0].match_AK4_index);
-	Jets.insert(Jets.begin(), tmpjet);
-	ivarj = 1;
-	}
       if (LJets.size()>1) {
-	for (int jk=ivarl; jk<(int)vleptons.size(); jk++) {
+	for (int jk=0; jk<(int)vleptons.size(); jk++) {
 	  int ityp = (vleptons[jk].lepton_id==2) ? 6 : 7;
 	  double dr = delta2R(LJets[1].y, LJets[1].phi, vleptons[jk].eta, vleptons[jk].phi);
 	  hist_prptangle[ityp]->Fill(LJets[1].pt, dr,weight);
 	}
-	if (LJets[1].match_lepton_index >=0 && LJets[0].match_lepton_index != LJets[1].match_lepton_index && vleptons.size() >1) {
-	  Lepton tmplep = vleptons[LJets[1].match_lepton_index];
-	  vleptons.erase(vleptons.begin() + LJets[1].match_lepton_index);
-	  vleptons.insert(vleptons.begin()+1, tmplep);
-	  }
-	
-	if (LJets[1].match_AK4_index >= 0 && LJets[0].match_AK4_index != LJets[1].match_AK4_index && Jets.size()>1) {
-	AK4Jet tmpjet = Jets[LJets[1].match_AK4_index];
-	Jets.erase(Jets.begin() + LJets[1].match_AK4_index);
-	Jets.insert(Jets.begin()+1, tmpjet);
-	}
+	// Assign electronic top tagger score //                                          
       }
-      // Assign electronic top tagger score //                                          
-  
-      ReadTagger(LJets,vleptons,vmuons,velectrons,reader1,reader4);
+	ReadTagger(LJets,vleptons,vmuons,velectrons,reader1,reader4);
   }
-
-  if(Jets.size()>0)    hist_btag_cutflow1[1]->Fill(Jets[0].btag_DeepFlav,weight);
-  if(Jets.size()>1)    hist_btag_cutflow2[1]->Fill(Jets[1].btag_DeepFlav,weight);
+  
   //if(isnan(weight) || weight>1.e+12) { weight = 0; }
   
   /******trigger object along with pdgid*****/
@@ -734,14 +717,15 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
   // end of object selection //
   //// Event selection ////
 
+
   hist_prvar[3]->Fill(vleptons.size(), weight);
+  if (vleptons.size()<2)  return kFALSE;
   //at least two leptons with pT > 30 GeV at this stage
   hist_count->Fill(3,weight);
-  if (vleptons.size()<2)  return kFALSE; 
-  //// Condition on number of leptons is put here only. We will need at least two leptons for trigger matching
-  if(Jets.size()>0)    hist_btag_cutflow1[2]->Fill(Jets[0].btag_DeepFlav,weight);
-  if(Jets.size()>1)    hist_btag_cutflow2[2]->Fill(Jets[1].btag_DeepFlav,weight);
+  hist_met_cutflow[2]->Fill(PFMET,weight);
 
+ 
+  //// Condition on number of leptons is put here only. We will need at least two leptons for trigger matching
   
   bool emu_ch = false;
   bool mumu_ch = false;
@@ -751,7 +735,7 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
   else if (vleptons[0].pdgId == 13 && vleptons[1].pdgId == 13) mumu_ch = true;
   else if (vleptons[0].pdgId == 11 && vleptons[1].pdgId == 11) ee_ch =true;
     
-  hist_prvar[4]->Fill(int(emu_ch)*4+int(mumu_ch)*2+int(ee_ch));
+ 
 
   // Composition of two leading leptons should be correct in respective event categories //    
   bool correct_lepton_combo = false;
@@ -784,7 +768,7 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
   double_hlts.push_back(hlt_Mu27Ele37);
   double_pt_cuts.push_back({37+3,27+3});
   double_pids.push_back({11,13});
-
+  
   single_hlts.push_back(hlt_Mu50);
   single_pt_cuts.push_back(50+3);
   single_pids.push_back(13);
@@ -837,9 +821,6 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
     }
   }
   
-  hist_prvar[5]->Fill(int(anytrig_pass), weight);
-  
-  hist_prvar[6]->Fill(min(float(359.0),vleptons[0].pt), weight);
 	
   bool trig_threshold_pass(false), trig_matching_pass(false);
 
@@ -850,7 +831,7 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
   vector<TH2D*> hist2d_prptangle;
   hist2d_prptangle.push_back(hist_prptangle[8]);
   hist2d_prptangle.push_back(hist_prptangle[9]);
-
+	 
   Match_trigger(double_hlts, single_hlts,
                 double_pt_cuts, single_pt_cuts,
                 double_pids, single_pids,
@@ -860,13 +841,9 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
                 trig_threshold_pass,
                 trig_matching_pass,
                 hists,hist2d_prptangle
-                );
-  
+                );	   
   // end of trigger stuffs //
     
-  hist_prvar[7]->Fill(lepcand_1.charge*lepcand_2.charge, weight);
-  hist_prvar[8]->Fill(velectrons.size());
-  hist_prvar[9]->Fill(vmuons.size());
   
   bool is_additional_muons = false;
   bool is_additional_elecs = false;
@@ -883,66 +860,122 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
 #endif
 
   //some variable distributions before using cuts on them//                        
-                                                                                   
-  if(LJets.size()>0) hist_prvar[10]->Fill(LJets.size(), weight);
-  if(Jets.size()>0) hist_prvar[11]->Fill(Jets.size(), weight);
-
-  if(LJets.size()>0 && Jets.size()>0) {
-    double lepakmatch =delta2R(LJets[0].y,LJets[0].phi,Jets[0].y,Jets[0].phi);
-    hist_prvar[12]->Fill(lepakmatch, weight);
-  }
-  if(LJets.size()>1 && Jets.size()>1) {
-    double lepakmatch2 = delta2R(LJets[1].y,LJets[1].phi,Jets[1].y,Jets[1].phi);
-    hist_prvar[13]->Fill(lepakmatch2, weight);
-  }
-  if(BJets.size()>0) hist_prvar[14]->Fill(BJets.size(), weight);
-  if(Jets.size()>0) hist_prvar[16]->Fill(min(float(359.0),Jets[0].pt), weight);
-  
-  hist_prvar[20]->Fill(PFMET, weight);
-  if (LJets.size()<2) return kFALSE;
-  hist_count->Fill(4,weight);
-  if(Jets.size()>0)    hist_btag_cutflow1[3]->Fill(Jets[0].btag_DeepFlav,weight);
-  if(Jets.size()>1)    hist_btag_cutflow2[3]->Fill(Jets[1].btag_DeepFlav,weight);
+  //if (LJets.size()<2) return kFALSE;
+  //hist_count->Fill(4,weight);
   
   vector<bool> event_cuts;
   //Before this stage 3 event selection cuts applied offline => at least 1 primary vertex, at least one listed trigger fired, at least two leptons with pt > 30 GeV and they are closest (< 0.7) to leading AK8 jets, at least two large radius jets.
   
   
   //Here follows other event cuts offline//
+  bool  histfill =true;
   
-  //Event should have at least AK8 jet with pt > 300GeV \1. 
-  event_cuts.push_back(LJets.size()>=2 && LJets[1].pt>300.); 
-  // Composition of two leading leptons should be correct in respective event categories // \2.
+
+  if(histfill) {
+    hist_prvar[4]->Fill(int(emu_ch)*4+int(mumu_ch)*2+int(ee_ch));
+  }
+  // Composition of two leading leptons should be correct in respective event categories // \4.
   event_cuts.push_back(correct_lepton_combo);
-  // Did the event fire any trigger in the topology considered? \3.                     
+  histfill *= event_cuts[0];
+    
+  if(histfill) hist_prvar[5]->Fill(int(anytrig_pass), weight);
+  // Did the event fire any trigger in the topology considered? \5.                     
   event_cuts.push_back(anytrig_pass);
-  // offline objects should pass kinematic thresholds in triggers \4.
-  event_cuts.push_back(trig_threshold_pass);
-  // offline objects should be matched to trigger objects \5.                       
-  event_cuts.push_back(trig_matching_pass);
-  // leptons should be oppositely charged \6.
-  event_cuts.push_back(vleptons.size()>=2 && (lepcand_1.charge*lepcand_2.charge)<0);
-  //Cut on the number of additional muons (pt>30 GeV) //   \7.                          
-  event_cuts.push_back(!is_additional_muons);
-  //Cut on the number of additional electrons (pt>30 GeV) // \8.                        
-  event_cuts.push_back(!is_additional_elecs);
-  //Cut on at least two AK4 jets satisfying object selection criteria// \9.
-  event_cuts.push_back(Jets.size()>=2);
-  //Cut on AK8 and AK4 jet matching// \10.
-  event_cuts.push_back(LJets.size()>=2 && Jets.size()>=2 && delta2R(LJets[0].y,LJets[0].phi,Jets[0].y,Jets[0].phi)<0.8);
-  //Cut on 2nd AK8 and AK4 jet matching// \11.
-  event_cuts.push_back(LJets.size()>=2 && Jets.size()>=2 && delta2R(LJets[1].y,LJets[1].phi,Jets[1].y,Jets[1].phi)<0.8);
-  //Cut on AK8 and lepton matching// \12.
-  event_cuts.push_back(LJets.size()>=2 && Jets.size()>=2 && delta2R(LJets[0].y,LJets[0].phi, vleptons[0].eta, vleptons[0].phi)<0.7);
-  //Cut on 2nd AK8 and lepton matching// \13.
-  event_cuts.push_back(LJets.size()>=2 && Jets.size()>=2 && delta2R(LJets[1].y,LJets[1].phi, vleptons[1].eta, vleptons[1].phi)<0.7);
-  //Cut on btag score of AK4 jets though (as loose cut as possible)// \14.
-  event_cuts.push_back(Jets.size()>=2 && Jets[0].btag_DeepFlav>0 && Jets[1].btag_DeepFlav>0);
-  // Inv mass of selected leptons should be > 20 GeV \15. 
-  event_cuts.push_back(vleptons.size()>=2 && (((lepcand_1.p4+lepcand_2.p4).M())>20));
-  // MET > 50 GeV \16.                                                                   
-  event_cuts.push_back(PFMET>50);
+  histfill *= event_cuts[1];
+
   
+  // offline objects should pass kinematic thresholds in triggers \6.
+  event_cuts.push_back(trig_threshold_pass);
+  histfill *= event_cuts[2];
+
+
+
+  // offline objects should be matched to trigger objects \7.                       
+  event_cuts.push_back(trig_matching_pass);
+  histfill *= event_cuts[3];
+  
+
+  if(histfill){
+    if ((int)vleptons.size()>0)  hist_prvar[6]->Fill(min(float(359.0),vleptons[0].pt), weight);
+    hist_prvar[7]->Fill(vleptons[0].charge*vleptons[1].charge, weight);
+  }
+  // leptons should be oppositely charged \8.
+  event_cuts.push_back(vleptons.size()>=2 && (lepcand_1.charge*lepcand_2.charge)<0);
+  histfill *= event_cuts[4];
+
+  
+  if(histfill){
+    hist_prvar[8]->Fill(nelecs);
+    hist_prvar[9]->Fill(nmuons);
+  }
+  //Cut on the number of additional muons (pt>30 GeV) //   \9.                          
+  event_cuts.push_back(!is_additional_muons);
+  histfill *= event_cuts[5];
+  
+  //Cut on the number of additional electrons (pt>30 GeV) // \10.                        
+  event_cuts.push_back(!is_additional_elecs);
+  histfill *= event_cuts[6];
+  
+
+  if(histfill) hist_prvar[10]->Fill(LJets.size(), weight);
+  //Event should have at least AK8 jet with pt > 300GeV \11.
+  event_cuts.push_back(LJets.size()>=2 && LJets[1].pt>300.);
+  histfill *= event_cuts[7];
+
+  
+  if(histfill) hist_prvar[11]->Fill(Jets.size(), weight);
+  //Cut on at least two AK4 jets satisfying object selection criteria// \12.
+  event_cuts.push_back(Jets.size()>=2);
+  histfill *= event_cuts[8];
+
+
+  if(histfill) hist_prvar[12]->Fill(delta2R(LJets[0].y,LJets[0].phi,Jets[0].y,Jets[0].phi),weight);
+    //Cut on AK8 and AK4 jet matching// \13.
+  event_cuts.push_back(LJets.size()>=2 && Jets.size()>=2 && delta2R(LJets[0].y,LJets[0].phi,Jets[0].y,Jets[0].phi)<0.8);
+  histfill *= event_cuts[9];
+  
+  
+  if(histfill)  hist_prvar[13]->Fill(delta2R(LJets[0].y,LJets[0].phi, vleptons[0].eta, vleptons[0].phi),weight);
+  //Cut on AK8 and lepton matching// \14.
+  event_cuts.push_back(LJets.size()>=2 && vleptons.size()>=2 && delta2R(LJets[0].y,LJets[0].phi, vleptons[0].eta, vleptons[0].phi)<0.7);
+  histfill *= event_cuts[10];
+
+  
+  
+  if(histfill) hist_prvar[14]->Fill(delta2R(LJets[1].y,LJets[1].phi,Jets[1].y,Jets[1].phi), weight);
+  //Cut on 2nd AK8 and AK4 jet matching// \15.
+  event_cuts.push_back(LJets.size()>=2 && Jets.size()>=2 && delta2R(LJets[1].y,LJets[1].phi,Jets[1].y,Jets[1].phi)<0.8);
+  histfill *= event_cuts[11];
+
+
+  if(histfill) hist_prvar[15]->Fill(delta2R(LJets[1].y,LJets[1].phi, vleptons[1].eta, vleptons[1].phi), weight);
+  //Cut on 2nd AK8 and lepton matching// \16.
+  event_cuts.push_back(LJets.size()>=2 && vleptons.size()>=2 && delta2R(LJets[1].y,LJets[1].phi, vleptons[1].eta, vleptons[1].phi)<0.8);
+  histfill *= event_cuts[12];
+  
+
+  if(histfill) hist_prvar[16]->Fill(BJets.size(), weight);
+  //Cut on btag score of AK4 jets though (as loose cut as possible)// \17.
+  event_cuts.push_back(Jets.size()>=2 && Jets[0].btag_DeepFlav>0 && Jets[1].btag_DeepFlav>0);
+  histfill *= event_cuts[13];
+
+
+  if(histfill){
+    int ixtyp=-1;
+    if (vleptons[0].pdgId==11 && vleptons[1].pdgId==11) {ixtyp=0;
+    } else if (vleptons[0].pdgId==13 && vleptons[1].pdgId==13) {ixtyp=2;
+    } else { ixtyp=1;}
+    hist_prvar[18+ixtyp]->Fill(min(float(359.0),float((lepcand_1.p4+lepcand_2.p4).M())), weight);
+  }
+  // Inv mass of selected leptons should be > 20 GeV \18.
+  event_cuts.push_back(vleptons.size()>=2 && (((lepcand_1.p4+lepcand_2.p4).M())>20));
+  histfill *= event_cuts[14];
+    
+    
+    // MET > 50 GeV \19.
+  if(histfill)   hist_prvar[21]->Fill(PFMET, weight);
+  event_cuts.push_back(PFMET>50);
+  histfill *= event_cuts[15];
   //event_cuts array should be useful to derive (n-1) cut efficiency
   
   bool event_pass = true;
@@ -952,14 +985,13 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
     //  if(gProofServ) gProofServ->SendAsynMessage(str);                                
     if(!event_pass) break;
     if(event_pass){
-      hist_count->Fill(5+icut,weight);
-      if(Jets.size()>0)    hist_btag_cutflow1[4+icut]->Fill(Jets[0].btag_DeepFlav,weight);
-      if(Jets.size()>1)    hist_btag_cutflow2[4+icut]->Fill(Jets[1].btag_DeepFlav,weight);
+      hist_count->Fill(4+icut,weight);
+      hist_met_cutflow[3+icut]->Fill(PFMET,weight);
     }
-  }
+    }
   
   if(!event_pass) return kFALSE;
-  
+ 
   // end of event selection // 
   
   // Calculate all extra weights you need to apply (PU reweighting, b tag SF, lepton SF, top pt reweighting, ...) 
@@ -968,8 +1000,14 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
     float toppt_wt = 1;
     if(LHEtops.size()==2){
       toppt_wt = SF_TOP(0.0615,0.0005,TMath::Min(float(500),float(LHEtops[0].pt)),TMath::Min(float(500),float(LHEtops[1].pt)));
+      weight *= toppt_wt;
     }
   }
+    // Pile up rewighing //
+    if(isMC && npu_vert>=0 && npu_vert<100){
+    weight *= pu_ratUL18[npu_vert];
+    }
+  
   
   // top pt reweighting ends //                                                         
   // end of extra weights                                                               
@@ -1493,7 +1531,7 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
 
     // end //                                                                            
   //  if(gProofServ) {  str = TString::Format("check end evt %d ]]]",ievt);gProofServ->SendAsynMessage(str);	}
-	return kTRUE;     
+    return kTRUE;     
 }
 void Anal_Leptop_PROOF::SlaveTerminate()
 {

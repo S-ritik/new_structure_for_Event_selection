@@ -16,7 +16,7 @@ void Anal_Leptop_PROOF::getmuons(std::vector<Muon> &vmuons, float ptcut=25, floa
     //bool mu_iso = Muon_Iso_ID(muonpfiso[mu]);
     //if(!mu_iso) continue;
     
-    if(fabs(muontrkvtx[mu])>dxy_cut || fabs(muondz[mu])>dz_cut) continue;
+    //if(fabs(muontrkvtx[mu])>dxy_cut || fabs(muondz[mu])>dz_cut) continue;
     
     Muon vmuon;
     vmuon.pt = muonpt[mu];
@@ -72,7 +72,7 @@ void Anal_Leptop_PROOF::getelectrons(std::vector<Electron> &velectrons, float pt
    // if(!elmvaid[ie]) continue;
    if(!elmvaid_noIso[ie]) continue;
     
-   if(!((fabs(elsupcl_eta[ie])<1.4442 && fabs(eldxytrk[ie])<dxy_cut && fabs(eldztrk[ie])<dz_cut)||(fabs(elsupcl_eta[ie])>1.5660 && fabs(elsupcl_eta[ie])<2.5 && fabs(eldxytrk[ie])<(2*dxy_cut) && fabs(eldztrk[ie])<(2*dz_cut)))) continue;
+   //if(!((fabs(elsupcl_eta[ie])<1.4442 && fabs(eldxytrk[ie])<dxy_cut && fabs(eldztrk[ie])<dz_cut)||(fabs(elsupcl_eta[ie])>1.5660 && fabs(elsupcl_eta[ie])<2.5 && fabs(eldxytrk[ie])<(2*dxy_cut) && fabs(eldztrk[ie])<(2*dz_cut)))) continue;
    
    Electron velectron;
    
@@ -143,7 +143,8 @@ void Anal_Leptop_PROOF::getLeptons(std::vector<Lepton> &vleptons, std::vector<Mu
     vlepton.lepton_id = 1;
     vlepton.pdgId = 13;
     vlepton.p4 = vmuons[imu].p4;
-    vlepton.indexemu = imu; 
+    vlepton.indexemu = imu;
+    vlepton.AK8_neighbor_index=-1;
     vleptons.push_back(vlepton);
   }
   for(unsigned ie=0; ie<velectrons.size(); ie++){
@@ -158,6 +159,7 @@ void Anal_Leptop_PROOF::getLeptons(std::vector<Lepton> &vleptons, std::vector<Mu
     vlepton.pdgId = 11;
     vlepton.p4 = velectrons[ie].p4;
     vlepton.indexemu=ie;
+    vlepton.AK8_neighbor_index=-1;
     vleptons.push_back(vlepton);
   }
   sorted_by_pt(vleptons);
@@ -176,8 +178,8 @@ void Anal_Leptop_PROOF::getAK4jets(std::vector<AK4Jet> &Jets, float ptcut=30, fl
     pfjetAK4mass[ijet] *= pfjetAK4JEC[ijet];
     
     if(isMC){
-      pfjetAK4pt[ijet] *= (1+pfjetAK4reso[ijet]) ;
-      pfjetAK4mass[ijet] *= (1+pfjetAK4reso[ijet]) ;
+      pfjetAK4pt[ijet] *=max(float(0.0),(1+pfjetAK4reso[ijet])) ;
+      pfjetAK4mass[ijet] *= max(float(0.0),(1+pfjetAK4reso[ijet])) ;
     }
     
     if(fabs(pfjetAK4eta[ijet])>etacut) continue;
@@ -199,7 +201,7 @@ void Anal_Leptop_PROOF::getAK4jets(std::vector<AK4Jet> &Jets, float ptcut=30, fl
     sJet.btag_DeepCSV = pfjetAK4btag_DeepCSV[ijet];
     sJet.puid = pfjetAK4PUID[ijet];
     sJet.qgl = pfjetAK4qgl[ijet];
-		
+	sJet.AK8_neighbor_index = -1;
     Jets.push_back(sJet);
     
     if(int(Jets.size())>=maxsize) break;
@@ -217,21 +219,21 @@ void Anal_Leptop_PROOF::getAK8jets(std::vector<AK8Jet> &LJets, float ptcut=200, 
   
     if(!pfjetAK8jetID[ijet]) continue;
     
-    pfjetAK8pt[ijet] *= pfjetAK8JEC[ijet] ;
-    pfjetAK8mass[ijet] *= pfjetAK8JEC[ijet];
+      pfjetAK8pt[ijet] *= pfjetAK8JEC[ijet] ;
+     pfjetAK8mass[ijet] *= pfjetAK8JEC[ijet];
     
     if(isMC){
       
-      pfjetAK8pt[ijet] *= (1+pfjetAK8reso[ijet]) ;
-      pfjetAK8mass[ijet] *= (1+pfjetAK8reso[ijet]) ;
+       pfjetAK8pt[ijet] *= max(float(0.0),(1+pfjetAK8reso[ijet])) ;
+        pfjetAK8mass[ijet] *= max(float(0.0),(1+pfjetAK8reso[ijet])) ;
       
-      pfjetAK8pt_resoup[ijet] = pfjetAK8pt[ijet]*(1+pfjetAK8resoup[ijet]);
-      pfjetAK8mass_resoup[ijet] = pfjetAK8mass[ijet]*(1+pfjetAK8resoup[ijet]);
-      pfjetAK8pt_resodown[ijet] = pfjetAK8pt[ijet]*(1+pfjetAK8resodn[ijet]);
-      pfjetAK8mass_resodown[ijet] = pfjetAK8mass[ijet]*(1+pfjetAK8resodn[ijet]);
+      pfjetAK8pt_resoup[ijet] = pfjetAK8pt[ijet]*max(float(0.0),(1+pfjetAK8resoup[ijet]));
+      pfjetAK8mass_resoup[ijet] = pfjetAK8mass[ijet]*max(float(0.0),(1+pfjetAK8resoup[ijet]));
+      pfjetAK8pt_resodown[ijet] = pfjetAK8pt[ijet]*max(float(0.0),(1+pfjetAK8resodn[ijet]));
+      pfjetAK8mass_resodown[ijet] = pfjetAK8mass[ijet]*max(float(0.0),(1+pfjetAK8resodn[ijet]));
     }
     
-    if(fabs(pfjetAK8eta[ijet])>etacut) continue;
+    if(fabs(pfjetAK8y[ijet])>etacut) continue;
     if(pfjetAK8pt[ijet] < ptcut) continue;
     
     AK8Jet LJet;
@@ -353,37 +355,68 @@ void Anal_Leptop_PROOF::getAK8jets(std::vector<AK8Jet> &LJets, float ptcut=200, 
   
 }
 
-void Anal_Leptop_PROOF::LeptonJet_cleaning(std::vector<Lepton> Leptons, float dR_cut=0.4)
+void Anal_Leptop_PROOF::LeptonJet_cleaning(std::vector <Electron> velectrons,std::vector <Muon> vmuons, float dR_cut=0.4)
 {
-   for(int ilep=0; ilep<(int)Leptons.size(); ilep++)
+  for(int imu=0; imu<(int)vmuons.size(); imu++)
     {
-      TLorentzVector j_mom,clj_mom, lep_mom;
+      TLorentzVector j_mom,clj_mom, mu_mom;
       int matchjet=-1;
-      float delrmin=dR_cut;
+      float delrmin=0.4;
       for(int ijet=0; ijet<npfjetAK4; ijet++)
 	{
-	  float delrtmp = delta2R(pfjetAK4eta[ijet], pfjetAK4phi[ijet], Leptons[ilep].eta, Leptons[ilep].phi);
+	  float delrtmp = delta2R(pfjetAK4eta[ijet], pfjetAK4phi[ijet], vmuons[imu].eta, vmuons[imu].phi);
+	   hist_prptangle[1]->Fill(pfjetAK4pt[ijet], delrtmp,weight);
 	  if(delrtmp<delrmin)
-      {
-          delrmin = delrtmp;
-          matchjet=ijet;
-      }
+	    {
+	      matchjet=ijet;
+	      delrmin = delrtmp;
+	    }
 	}
       if(matchjet>=0)
 	{
 	  j_mom.SetPtEtaPhiM(pfjetAK4pt[matchjet],pfjetAK4eta[matchjet],pfjetAK4phi[matchjet],pfjetAK4mass[matchjet]);
-	  lep_mom.SetPtEtaPhiM(Leptons[ilep].pt, Leptons[ilep].eta, Leptons[ilep].phi, Leptons[ilep].mass);
-	  clj_mom = j_mom - lep_mom;
+	  mu_mom.SetPtEtaPhiM(vmuons[imu].pt, vmuons[imu].eta, vmuons[imu].phi, 0.105658);
+	  clj_mom = j_mom - mu_mom;
 	  pfjetAK4pt[matchjet] = clj_mom.Pt();
 	  pfjetAK4mass[matchjet] = clj_mom.M();
 	  pfjetAK4eta[matchjet] = clj_mom.Eta();
 	  pfjetAK4y[matchjet] = clj_mom.Rapidity();
 	  pfjetAK4phi[matchjet] = clj_mom.Phi();
-	  pfjetAK4inleppt[matchjet] += lep_mom.Pt();
+	  pfjetAK4inleppt[matchjet] += mu_mom.Pt();
 	  pfjetAK4delrlep[matchjet] = delrmin;
 	}
     }
 
+  for(int ie=0; ie<(int)velectrons.size(); ie++) {
+    {
+      TLorentzVector j_mom,clj_mom, el_mom;
+      int matchjet=-1;
+      float delrmin=0.4;
+      for(int ijet=0; ijet<npfjetAK4; ijet++)
+	{
+	  float delrtmp = delta2R(pfjetAK4eta[ijet],pfjetAK4phi[ijet], velectrons[ie].eta, velectrons[ie].phi);
+	  hist_prptangle[2]->Fill(pfjetAK4pt[ijet], delrtmp,weight);
+	  if(delrtmp<delrmin)
+	    {
+	      delrmin = delrtmp;
+	      matchjet=ijet;
+	    }
+	}
+      if(matchjet>=0)
+	{
+	  j_mom.SetPtEtaPhiM(pfjetAK4pt[matchjet],pfjetAK4eta[matchjet],pfjetAK4phi[matchjet],pfjetAK4mass[matchjet]);
+	  el_mom.SetPtEtaPhiM(velectrons[ie].pt, velectrons[ie].eta, velectrons[ie].phi, 0.000511);
+	  clj_mom = j_mom - el_mom;
+	  pfjetAK4pt[matchjet] = clj_mom.Pt();
+	  pfjetAK4mass[matchjet] = clj_mom.M();
+	  pfjetAK4eta[matchjet] = clj_mom.Eta();
+	  pfjetAK4y[matchjet] = clj_mom.Rapidity();
+	  pfjetAK4phi[matchjet] = clj_mom.Phi();
+	  pfjetAK4inleppt[matchjet] += el_mom.Pt();
+	  pfjetAK4delrlep[matchjet] = delrmin;
+	}
+    }
+  }
 }
 
 void Anal_Leptop_PROOF::getPartons(std::vector<GenParton> &GenPartons, int maxsize=npartmx)
@@ -445,10 +478,10 @@ void Anal_Leptop_PROOF::getGENTops(vector<TopQuark> &gentops, vector<GenParton> 
       
       if(!((abs(genpartons[igen].pdgId)>=1 && abs(genpartons[igen].pdgId)<=5)||(abs(genpartons[igen].pdgId)>=11 && abs(genpartons[igen].pdgId)<=16))) continue;
       if(!(abs(genpartons[igen].mompdgId)==6 || abs(genpartons[igen].mompdgId)==24)) continue;
-      if(abs(genpartons[igen].mompdgId)==24 && abs(genpartons[igen].grmompdgId)!=6) continue;
+      if(abs(genpartons[igen].mompdgId)==24 && (abs(genpartons[igen].grmompdgId)!=6 && abs(genpartons[igen].grmompdgId)!=24 )) continue;
             
-      if(abs(genpartons[igen].pdgId)>=1 && abs(genpartons[igen].pdgId)<=5 && abs(genpartons[igen].mompdgId)==24 && abs(genpartons[igen].grmompdgId)==6)   {  W_dau.push_back(genpartons[igen]); }
-      if(abs(genpartons[igen].pdgId)>=11 && abs(genpartons[igen].pdgId)<=16 && abs(genpartons[igen].mompdgId)==24 && abs(genpartons[igen].grmompdgId)==6) {  W_dau.push_back(genpartons[igen]); }
+      if(abs(genpartons[igen].pdgId)>=1 && abs(genpartons[igen].pdgId)<=5 && abs(genpartons[igen].mompdgId)==24 )   {  W_dau.push_back(genpartons[igen]); }
+      if(abs(genpartons[igen].pdgId)>=11 && abs(genpartons[igen].pdgId)<=16 && abs(genpartons[igen].mompdgId)==24 ) {  W_dau.push_back(genpartons[igen]); }
       if(abs(genpartons[igen].pdgId)==5 && abs(genpartons[igen].mompdgId)==6) {  t_bp.push_back(genpartons[igen]); }
     }
     
@@ -467,7 +500,7 @@ void Anal_Leptop_PROOF::getGENTops(vector<TopQuark> &gentops, vector<GenParton> 
       }
       
       for(unsigned ib=0; ib<t_bp.size(); ib++){
-	if(t_bp[ib].mompdgId==W_dau[ipart].grmompdgId){
+	if(t_bp[ib].pdgId*W_dau[ipart].mompdgId>0){
 	  match_b = ib;
 	  break;
 	}
@@ -773,8 +806,8 @@ void Anal_Leptop_PROOF::Match_trigger(vector<bool> double_hlts, vector<bool> sin
     if(!any_double_hlt_pass){
       if(single_hlts.size()>0){
 	for(unsigned ihlt=0; ihlt<single_hlts.size(); ihlt++){
-	  if (single_hlts[ihlt] && ((lepcand_1.pt>single_pt_cuts[ihlt] && lepcand_1.pdgId==single_pids[ihlt]) || (lepcand_2.pt>single_pt_cuts[ihlt] && lepcand_2.pdgId==single_pids[ihlt])) && single_other_pt_cuts[ihlt]>0 && Jets.size()>0 && Jets[0].pt>single_other_pt_cuts[ihlt])  { 
-	    trig_threshold_pass = true; 
+	  if (single_hlts[ihlt] && ((lepcand_1.pt>single_pt_cuts[ihlt] && lepcand_1.pdgId==single_pids[ihlt]) || (lepcand_2.pt>single_pt_cuts[ihlt] && lepcand_2.pdgId==single_pids[ihlt])) && single_other_pt_cuts[ihlt]>0 && Jets.size()>0 && Jets[0].pt>single_other_pt_cuts[ihlt])  {
+	    trig_threshold_pass = true;
 	    single_trig_pass = true;
 	    fired_single_trig = ihlt;
 	    break; 
@@ -844,7 +877,7 @@ void Anal_Leptop_PROOF::Match_trigger(vector<bool> double_hlts, vector<bool> sin
 	}
       }
 		
-      if(jettrobj){
+      if(jettrobj && Jets.size()>0){
 	
 	double tmprat = fabs((Jets[0].p4.Vect()-Trv).Mag()/max(1.e-6,(Jets[0].p4.Vect().Mag())));
 	if (tmprat < ptratmin_jet) {
