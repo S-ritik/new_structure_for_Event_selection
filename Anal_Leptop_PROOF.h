@@ -92,14 +92,13 @@ double BTag_SF(int flavor, string syst, double pt){
   
   // scale factors taken from the csv file in : https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X (for medium WP)
   
-  double x = pt;
-  if(x>1000) { x = 1000; }
+  double x = min(pt,999.9);  /// For btagging efficiency need to be updated (not using at the moment)
   
   if(syst ==  "noSyst") {
     if(abs(flavor)==5||abs(flavor)==4){
-      if (pt >= 20  && pt < 1000) return (1.0097+(-(2.89663e-06*(log(x+19)*(log(x+18)*(3-(-(110.381*log(x+18)))))))));
+      if (x >= 20  && x < 1000) return (1.0097+(-(2.89663e-06*(log(x+19)*(log(x+18)*(3-(-(110.381*log(x+18)))))))));
     }else{
-      if (pt >= 20  && pt < 1000) return (1.59373+-0.00113028*x+8.66631e-07*x*x+-1.10505/x) ;
+      if (x >= 20  && x < 1000) return (1.59373+-0.00113028*x+8.66631e-07*x*x+-1.10505/x) ;
     }
   }
   
@@ -841,11 +840,11 @@ if(flavor==4) {
  return 1.0;
 }
 
-double TopTag_SF(float pt){
+/*double TopTag_SF(float pt){
   
   // scale factors taken from DAKX twiki
-  
-  if(pt>=400 & pt<480) return 1.00;
+  // Will not use
+  if(pt<480) return 1.00;
   if(pt>=480 & pt<600) return 0.98;	
   if(pt>=600 & pt<12000) return 0.99;	
  
@@ -853,7 +852,7 @@ double TopTag_SF(float pt){
 }
 
 double TopTag_Efficiency_TT(float pt){
-  
+  // Will not use
   if(pt>=400 && pt<480) return 0.64376 ; 
   if(pt>=480 && pt<600) return 0.688251 ; 
   if(pt>=600 && pt<12000) return 0.701325 ;
@@ -904,7 +903,7 @@ double TopTag_Efficiency_bQCD(float pt){
   if(pt>=600 && pt<12000) return 0.265134 ;
   
   return 1;
-}
+}*/
 
 double SF_TOP(double alpha, double beta, double pt0, double pt1)
 {
@@ -1017,7 +1016,7 @@ class Anal_Leptop_PROOF : public TSelector {
   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
   
   //New more variables stored as ntuple//
-float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, met_phi, delta_phil1_met, delta_phil2_met, delta_phibl1_met, delta_phibl2_met, rat_metpt_ak4pt, rat_metpt_ak8pt, rat_metpt_eventHT, mt_of_l1met, mt_of_l2met, no_ak4jets, no_ak4bjets, no_ak8jets, EventHT, extra_ak4j, ptsum_extra_ak4, extra_ak4jqgl, extra_ak4jdeepb, rat_extra_ak4jpt_lpt, ak81pt, ak81y, ak81mass, ak81sdmass, ak81deep_tvsqcd, ak81deep_wvsqcd, ak82pt, ak82y, ak82mass, ak82sdmass, ak82deep_tvsqcd, ak82deep_wvsqcd, M_bl1, M_bl2, M_jl1, M_jl2, delta_phibl1bl2, delta_phijl1jl2, deltaR_l1l2, /*deltaR_l1b1, deltaR_l2b1, deltaR_l1b2, deltaR_l2b2,*/ deltaR_l1j1, deltaR_l2j1, deltaR_l1j2, deltaR_l2j2, j1_btag_sc, j2_btag_sc, j1_btag_sc_ptsort, j2_btag_sc_ptsort, ak81NHad , ak81chrad ,ak81neuhad , ak81tau21 , ak81subhaddiff , ak81tau32 , ak82NHad , ak82chrad , ak82neuhad , ak82tau21 , ak82subhaddiff , ak82tau32,ak41pt,ak42pt,ak41mass,ak42mass,ak41delrlep,ak42delrlep,ak41inleppt, ak42inleppt,lep1pt,lep2pt;
+float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, met_phi, delta_phil1_met, delta_phil2_met, delta_phibl1_met, delta_phibl2_met, rat_metpt_ak4pt, rat_metpt_ak8pt, rat_metpt_eventHT, mt_of_l1met, mt_of_l2met, no_ak4jets, no_ak4bjets, no_ak8jets, EventHT, extra_ak4j, ptsum_extra_ak4, extra_ak4jqgl, extra_ak4jdeepb, rat_extra_ak4jpt_lpt, ak81pt, ak81y, ak81mass, ak81sdmass, ak81deep_tvsqcd, ak81deep_wvsqcd, ak82pt, ak82y, ak82mass, ak82sdmass, ak82deep_tvsqcd, ak82deep_wvsqcd, M_bl1, M_bl2, M_jl1, M_jl2, delta_phibl1bl2, delta_phijl1jl2, deltaR_l1l2, /*deltaR_l1b1, deltaR_l2b1, deltaR_l1b2, deltaR_l2b2,*/ deltaR_l1j1, deltaR_l2j1, deltaR_l1j2, deltaR_l2j2, j1_btag_sc, j2_btag_sc, j1_btag_sc_ptsort, j2_btag_sc_ptsort, ak81NHad , ak81chrad ,ak81neuhad , ak81tau21 , ak81subhaddiff , ak81tau32 , ak82NHad , ak82chrad , ak82neuhad , ak82tau21 , ak82subhaddiff , ak82tau32,ak41pt,ak42pt,ak41mass,ak42mass,ak41delrlep,ak42delrlep,ak41inleppt, ak42inleppt,lep1pt,lep2pt, response_ak82,response_ak81;
   int genmatch_sc2,genmatch_sc1,topmatchvar;
 
   double dirgltrthr, dirglthrmin; 
@@ -1025,6 +1024,7 @@ float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, 
   static const int njetmx = 20;
   static const int njetmxAK8 = 10;
   static const int npartmx = 25;
+  static const int ntrigobjmx = 25;
   
   float weight;
   float weight_puwup;
@@ -1056,6 +1056,7 @@ float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, 
   Double_t        event_weight;
   Float_t         qscale;
   Int_t           npu_vert;
+  Int_t           npu_vert_true;
   Int_t           trig_value;
   
   Bool_t          hlt_IsoMu24;
@@ -1072,16 +1073,16 @@ float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, 
   Bool_t          hlt_DoubleEle25;
 
   Int_t           ntrigobjs;
-  Float_t         trigobjpt[20];   //[ntrigobjs]
-  Float_t         trigobjeta[20];   //[ntrigobjs]
-  Float_t         trigobjphi[20];   //[ntrigobjs]
-  Float_t         trigobjmass[20];   //[ntrigobjs]                                             
+  Float_t         trigobjpt[ntrigobjmx];   //[ntrigobjs]
+  Float_t         trigobjeta[ntrigobjmx];   //[ntrigobjs]
+  Float_t         trigobjphi[ntrigobjmx];   //[ntrigobjs]
+  Float_t         trigobjmass[ntrigobjmx];   //[ntrigobjs]
                  
-  Int_t           trigobjpdgId[20];   //[ntrigobjs]
-  Bool_t          trigobjHLT[20];   //[ntrigobjs]
-  Bool_t          trigobjL1[20];   //[ntrigobjs]
-  Bool_t          trigobjBoth[20];   //[ntrigobjs]
-  Int_t           trigobjIhlt[20];   //[ntrigobjs]
+  Int_t           trigobjpdgId[ntrigobjmx];   //[ntrigobjs]
+  Bool_t          trigobjHLT[ntrigobjmx];   //[ntrigobjs]
+  Bool_t          trigobjL1[ntrigobjmx];   //[ntrigobjs]
+  Bool_t          trigobjBoth[ntrigobjmx];   //[ntrigobjs]
+  Int_t           trigobjIhlt[ntrigobjmx];   //[ntrigobjs]
   Float_t         PFMET;
   Float_t         PFMETPhi;
   Float_t         MisEtSig;
@@ -1280,7 +1281,7 @@ float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, 
    Float_t         genpartphi[npartmx];
    Float_t         genpartm[npartmx];
    
-   Int_t           genpartpair[npartmx];
+   Int_t           genpartpair[npartmx];  //Not using many of them now
    //Int_t           ngenelectrons;
    Float_t         genelectronpt[npartmx];
    Float_t         genelectroneta[npartmx];
@@ -1423,6 +1424,7 @@ float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, 
    TBranch        *b_event_weight;   //!
    TBranch        *b_qscale;   //!
    TBranch        *b_npu_vert;   //!
+   TBranch        *b_npu_vert_true;   //!
    TBranch        *b_trig_value;   //!
 
    TBranch        *b_hlt_IsoMu24;
@@ -1707,6 +1709,7 @@ float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, 
    TBranch        *b_elpfsiolsumneuhadet;
 
    float pfjetAK8pt_resoup[njetmxAK8], pfjetAK8mass_resoup[njetmxAK8], pfjetAK8pt_resodown[njetmxAK8], pfjetAK8mass_resodown[njetmxAK8]; 
+   float pfjetAK4pt_resoup[njetmx], pfjetAK4mass_resoup[njetmx], pfjetAK4pt_resodown[njetmx], pfjetAK4mass_resodown[njetmx];
    float pfjetAK8sub1hadfrac[njetmxAK8], pfjetAK8sub2hadfrac[njetmxAK8], pfjetAK8HadF[njetmxAK8], pfjetAK8NHadF[njetmxAK8];
    float puWeight, puWeightUp, puWeightDown;
  
@@ -1732,14 +1735,14 @@ float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, 
 	
 TH1D *hist_count=0;
 	//GMA define all these histogrammes. Before you put the crit on these variables, look on those first.
-	static const int nprvar=22;	//GMA added these new variables (last three are for M_ll for three cases
+	static const int nprvar=26;	//GMA added these new variables (last three are for M_ll for three cases
 	TH1D* hist_prvar[nprvar]={0};
 
-	const char* prvar_name[nprvar] = {"pr_dummy","pr_nprime","pr_trigger","pr_nlepton","pr_lepmatch","pr_lepmattrigger","pr_leppt1","pr_lepchargeproduct","pr_nelec","pr_nmuon","pr_nak8","pr_nak4","pr_dr_ak81_ak41","pr_dr_ak81_lep1","pr_dr_ak82_ak42","pr_dr_ak82_lep2","pr_nbjets","pr_ptak4", "pr_melel", "pr_melmu", "pr_mmumu","pr_PFMET"};
+	const char* prvar_name[nprvar] = {"pr_dummy","pr_nprime","pr_trigger","pr_nlepton","pr_lepmatch","pr_lepmattrigger","pr_leppt1","pr_lepchargeproduct","pr_nelec","pr_nmuon","pr_nak8","pr_nak4","pr_dr_ak81_ak41","pr_dr_ak81_lep1","pr_dr_ak82_ak42","pr_dr_ak82_lep2","pr_nbjets","pr_ptak4", "pr_melel", "pr_melmu", "pr_mmumu","pr_PFMET","pr_trigger_after","pr_extra_muon_pt","pr_extra_electron_pt","pr_pt_ak82"};
 
-	int prvar_bins[nprvar] = {100,    101,   65,   12,   6,    2, 120,   3,    10,   10,   10,   20, 120, 120, 120, 120, 10,  120, 120,   120,   120, 120};
-	float prvar_low[nprvar] =  {0.0,   -0.5,  -0.5, -0.5,  -0.5, -0.5, 0.0, -1.5, -0.5, -0.5, -0.5, -0.5,  0,  0, 0,  0, -0.5,    0,   0,   0,   0, 0};
-	float prvar_high[nprvar] ={100.0, 100.5, 64.5, 11.5, 5.5,  1.5, 360,  1.5,  9.5,  9.5,  9.5, 19.5, 6.5, 6.5, 6.5, 6.5, 9.5, 360,  360, 360,  360, 800};
+	int prvar_bins[nprvar] = {100,    101,   65,   12,   6,    2, 60,   16,    10,   10,   10,   20, 60, 60, 60, 60, 10,  60, 60,   60,   60, 60, 65, 60, 60,60};
+	float prvar_low[nprvar] =  {0.0,   -0.5,  -0.5, -0.5,  -0.5, -0.5, 0.0, -200, -0.5, -0.5, -0.5, -0.5,  0,  0, 0,  0, -0.5,    0,   0,   0,   0, 0, -0.5, 10, 10,200};
+	float prvar_high[nprvar] ={100.0, 100.5, 64.5, 11.5, 5.5,  1.5, 700,  200,  9.5,  9.5,  9.5, 19.5, 6.5, 6.5, 6.5, 6.5, 9.5, 360, 600, 600,  600, 800, 64.5, 300, 300,1500};
 
 	static const int ntypes=5;
 	static const int ntcount=3;
@@ -1748,7 +1751,7 @@ TH1D *hist_count=0;
 	static const int nybin=120;
 	double ybins[nybin+1]={10, 10.4232, 10.8643, 11.324, 11.8032, 12.3027, 12.8233, 13.366, 13.9316, 14.5211, 15.1356, 15.7761, 16.4437, 17.1396, 17.8649, 18.6209, 19.4089, 20.2302, 21.0863, 21.9786, 22.9087, 23.8781, 24.8886, 25.9418, 27.0396, 28.1838, 29.3765, 30.6196, 31.9154, 33.266, 34.6737, 36.141, 37.6704, 39.2645, 40.9261, 42.658, 44.4631, 46.3447, 48.3059, 50.3501, 52.4807, 54.7016, 57.0164, 59.4292, 61.9441, 64.5654, 67.2977, 70.1455, 73.1139, 76.2079, 79.4328, 82.7942, 86.2979, 89.9498, 93.7562, 97.7237, 101.859, 106.17, 110.662, 115.345, 120.226, 125.314, 130.617, 136.144, 141.906, 147.911, 154.17, 160.694, 167.494, 174.582, 181.97, 189.671, 197.697, 206.063, 214.783, 223.872, 233.346, 243.22, 253.513, 264.241, 275.423, 287.078, 299.226, 311.889, 325.087, 338.844, 353.183, 368.129, 383.707, 399.945, 416.869, 434.51, 452.898, 472.063, 492.04, 512.861, 534.564, 557.186, 580.764, 605.341, 630.957, 657.658, 685.488, 714.496, 744.732, 776.247, 809.096, 843.335, 879.023, 916.22, 954.993, 995.405, 1037.53, 1081.43, 1127.2, 1174.9, 1224.62, 1276.44, 1330.45, 1386.76, 1445.44};
 
-	const char* ptprvar_name[nprvar] = {"ptpreta_ak8", "ptpreta_ak4", "ptpreta_bjet", "ptpreta_el", "ptpreta_muon"};
+	const char* ptprvar_name[ntypes] = {"ptpreta_ak8", "ptpreta_ak4", "ptpreta_bjet", "ptpreta_el", "ptpreta_muon"};
 
 	static const int npr_angle=10;
 	TH2D* hist_prptangle[npr_angle]={0};
@@ -1756,7 +1759,7 @@ TH1D *hist_count=0;
 
 
 	static const int noptbins = 32;
-	double ptbins[noptbins+1] = {395, 430, 468,
+	double ptbins[noptbins+1] = {300, 390, 468,
 															 507, 548, 592, 638, 686, 737, 790, 846, 905, 967, 1032, 1101, 1172, 1248, 1327, 1410, 1497, 1588, 1684, 1784, 1890, 2000, 2116, 2238, 2366, 2500, 2640, 2787, 2941, 3103};
 
   static const int nobptbins = 9;
@@ -1766,7 +1769,7 @@ TH1D *hist_count=0;
   double betabins[nobetabins+1] = {0, 0.6, 1.2, 2.5};
 
   static const int notptbins = 3;
-  double tptbins[notptbins+1] = {400, 480, 600, 1200};
+  double tptbins[notptbins+1] = {300, 480, 600, 1200};
 
   float DAK8_topcut = 0.470; //0.470 ;//1% mistag rate (0.920 // 0.1% mistag)
   float deep_btag_cut = 0.2783; //0.0494//loose //(0.2770//medium) (0.7264 //tight) => These are for Autumn18
@@ -1774,11 +1777,11 @@ TH1D *hist_count=0;
   float re_cut = 0.3;
   float rt_cut = 0.7;//0.725;
 
-  //float muon_pt_cut = 25;
-  //float electron_pt_cut = 25;
+  float muon_pt_cut = 20;
+  float electron_pt_cut = 20;
   float lepton_pt_cut = 30;
   float AK4jet_pt_cut = 30;
-  float AK8jet_pt_cut = 200;
+  float AK8jet_pt_cut = 300;
 
   float absetacut = 2.5;
 
@@ -1792,7 +1795,7 @@ TH1D *hist_count=0;
     
   //TH1D *hist_new_var[15];
 	//GMA define nhist_in and use that
-	static const int nhist_in=16;
+	static const int nhist_in=19;
   TH1D *hist_init[nhist_in];
 
   static const int nobshist = 47;
@@ -1818,8 +1821,8 @@ TH1D *hist_count=0;
 	double obs_low[nobshist] = {200,-2.5,0,0,0,0,-0.15,0,0,0,0,0,-1.0,-1.0,-0.5,-0.5,-0.5,-0.5,0,0,0,0,0,200,-2.5,0,0,0,0,-0.15,0,0,0,0,0,-1.0,-1.0,-0.5,-0.5,-0.5,-0.5,0,0,0,0,0,0};
 	double obs_up[nobshist] = {3100,2.5,300,1,1,500,0.15,1,1,1,1,1,1,1,1.5,1.5,1.5,1.5,5,5,5,5,5,3100,2.5,300,1,1,300,0.15,1,1,1,1,1,1,1,1.5,1.5,1.5,1.5,5,5,5,5,1,1};
 
-	int obs_nbins[nobshist] = {25,25,25,25,25,25,25,25,60,20,20,20,40,40,2,2,2,2,25,25,25,25
-														 ,25,25,25,25,25,25,25,25,25,60,20,20,20,40,40,2,2,2,2,25,25,25,25,25,25};
+	int obs_nbins[nobshist] = {30,30,30,30,30,30,30,30,60,30,30,30,60,60,2,2,2,2,30,30,30,30
+														 ,30,30,30,30,30,30,30,30,30,60,30,30,30,60,60,2,2,2,2,30,30,30,30,30,30};
 
     static const int nhistbtag=14;
     TH1D *hist_obs_btag[nhistbtag];
@@ -1845,24 +1848,24 @@ TH1D *hist_count=0;
 
 	//const char *new_var_title[9] = {"M_{l1,l2}","rat_{l1,l2}","#delta#phi_{l1,l2}","l1p_{T}wrtj","l2p_{T}wrtj","MET","MET_{#eta}","#delta#phi_{l1,MET}","#delta#phi_{l2,MET}"};
 
-	const char *initnames[nhist_in] = {"matchN_l1","matchN_l2","N_PV_sel","NJets_AK4","NBJets_AK4","NJets_AK8","mll","l1pt","l1eta","l1phi","l2pt","l2eta","l2phi","bjetpt","bjeteta","bjetphi"};
+	const char *initnames[nhist_in] = {"matchN_l1","matchN_l2","N_PV_sel","NJets_AK4","NBJets_AK4","NJets_AK8","mll","l1pt","l1eta","l1phi","l2pt","l2eta","l2phi","ak41jetpt","ak41jeteta","ak41jetphi","ak42jetpt","ak42jeteta","ak42jetphi"};
 
-	const char *titlenames[nhist_in] = {"trigger matching for mu","trigger matching for el","# of Primary Vertices","# of AK4 jets","# of b tagged AK4 jets","# of AK8 jets","mll","l1pt","l1eta","l1phi","l2pt","l2eta","l2phi","bjet pT","bjet eta","bjet phi"};
+	const char *titlenames[nhist_in] = {"trigger matching for mu","trigger matching for el","# of Primary Vertices","# of AK4 jets","# of b tagged AK4 jets","# of AK8 jets","mll","l1pt","l1eta","l1phi","l2pt","l2eta","l2phi","pT of leading AK4","eta of leading AK4","phi of leading AK4","pT of subleading AK4","eta of subleading AK4","phi of subleading AK4"};
 
 	//double new_var_low[9] = {0.0,0.0,-5.0,0.0,0.0,0.0,-2.5,-5.0,-5.0};//,0.0,0.0,0.0,0.0,0.0,0.0,0.0,300.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
 	//double new_var_up[9] = {500.0,2.0,5.0,1000.0,1000.0,500.0,2.5,5.0,5.0};//1000,3.15,3.15,3.15,500,500,3000,500,3.15,3.15,3.15,3.15,500,500,5.};
 	//int new_var_nbins[9] = {25,25,50,50,50,25,25,50,50};//30,25,25,25,25,25,30,25,25,25,25,25,25,25,25};
 
-	double ini_low[nhist_in] = {0.0,0.0,-0.1,0.5,0.5,0.5,0.0,25.0,-2.5,-3.15,25.0,-2.5,-3.15,25.0,-2.5,-3.15};
-	double ini_up[nhist_in] = {1.0,1.0,99.9,10.5,10.5,10.5,800.0,1000.0,2.5,3.15,1000.0,2.5,3.15,1000.0,2.5,3.15};
-	int ini_nbins[nhist_in] = {50,50,100,11,11,11,25,50,25,50,50,25,50,50,25,50};
+	double ini_low[nhist_in] = {0.0,0.0,-0.1,0.5,0.5,0.5,0.0,30.0,-2.5,-3.15,30.0,-2.5,-3.15,30.0,-2.5,-3.15,30.0,-2.5,-3.15};
+	double ini_up[nhist_in] = {1.0,1.0,99.9,10.5,10.5,10.5,800.0,900.0,2.5,3.15,900.0,2.5,3.15,900.0,2.5,3.15,900.0,2.5,3.15};
+	int ini_nbins[nhist_in] = {60,60,100,11,11,11,30,60,30,30,60,30,30,60,30,30,60,30,30};
 
 	TH1D *hist_npv;
 	TH1D *hist_npv_nopuwt;
 
     const static int nhistdeltaR=16;
     TH1D *hist_genmatch_deltaR[nhistdeltaR];
-    const char *names_genmatch_deltaR[nhistdeltaR] = {"deltaR_genlep_ak8_1","deltaR_genb_ak8_1","deltaR_genblep_ak8_1","deltaR_gentop_ak8_1","deltaR_genlep_ak8_2","deltaR_genb_ak8_2","deltaR_genblep_ak8_2","deltaR_gentop_ak8_2","deltaR_genlep_ak8_1_withbtagging","deltaR_genb_ak8_1_withbtagging","deltaR_genblep_ak8_1_withbtagging","deltaR_gentop_ak8_1_withbtagging","deltaR_genlep_ak8_2_withbtagging","deltaR_genb_ak8_2_withbtagging","deltaR_genblep_ak8_2_withbtagging","deltaR_gentop_ak8_2_withbtagging"};
+    const char *names_genmatch_deltaR[nhistdeltaR] = {"deltaR_genlep_ak8_1","deltaR_genb_ak8_1","deltaR_genblep_ak8_1","deltaR_gentop_ak8_1","deltaR_genlep_ak8_2","deltaR_genb_ak8_2","deltaR_genblep_ak8_2","deltaR_gentop_ak8_2","deltaR_genlep_ak8_1_withbtagging","deltaR_genb_ak8_1_withbtagging","deltaR_genblep_ak8_1_withbtagging","deltaR_gentop_ak8_1_withbtagging","deltaR_genlep_ak8_2_withbtagging","deltaR_genb_ak8_2_withbtagging","deltaR_genblep_ak8_2_withbtagging","deltaR_gentop_ak8_2_withbtagging"};  /// Used in the code
 
     const char *titles_genmatch_deltaR[nhistdeltaR] = {"deltaR(gen lep, leading lep jet)","deltaR(gen b, leading AK4 jet)","deltaR(gen (b +lep), leading AK8 jet)","deltaR(gen top, leading AK8 jet)","deltaR(gen lep, sub leading lep jet)","deltaR(gen b, sub leading AK4 jet)","deltaR(gen (b +lep), sub leading AK8 jet)","deltaR(gen top, sub leading AK8 jet)","deltaR(gen lep, leading lep jet) with btagging","deltaR(gen (b +lep), leading AK8 jet) with btagging","deltaR(gen b, leading AK8 jet) with  btagging","deltaR(gen top, leading AK8 jet) with btagging","deltaR(gen lep, sub leading lep jet) with btagging","deltaR(gen b, sub leading AK4 jet) with btagging","deltaR(gen (b+lep), sub leading AK8 jet) with btagging","deltaR(gen top, sub leading AK8 jet) with btagging"};
 
@@ -1879,9 +1882,9 @@ TH1D *hist_count=0;
     TH2D *hist_2d_deltaR_vsbtagsc[2];
     TH2D *hist_2d_pt_vsbtagsc[4];
     TH2D *hist_2d_deltaR_vspt[2];
-    TH2D* hist_prptbtag[2];
 
-    TH1D* hist_count_lep;
+    TH1D *hist_count_lep, *hist_elmvaid,*hist_delr_ele_ak41[2],*hist_delr_ele_ak42[2];
+    TH2D *hist_2d_pt_genlepvsb;
 
 	
 	float in_pfjetAK8NHadF;
@@ -1974,7 +1977,7 @@ TH1D *hist_count=0;
   virtual void    getLeptons(std::vector<Lepton> &vleptons, std::vector<Muon> vmuons, std::vector<Electron> velectrons, float pt_cut);
   virtual void    getAK4jets(std::vector<AK4Jet> &Jets, float ptcut, float etacut, bool isMC, int maxsize);
   virtual void    getAK8jets(std::vector<AK8Jet> &LJets, float ptcut, float etacut, bool isMC, int maxsize);
-  virtual void    LeptonJet_cleaning(std::vector <Electron> velectrons,std::vector <Muon> vmuons, float dR_cut);
+  //virtual void    LeptonJet_cleaning(std::vector <Electron> velectrons,std::vector <Muon> vmuons, float dR_cut);
   virtual void    getPartons(std::vector<GenParton> &GenPartons, int maxsize);
   virtual void    getLHETops(std::vector<GenParton> &LHETops, std::vector<GenParton> GenPartons);
   virtual void    getGENTops(vector<TopQuark> &gentops, vector<GenParton> genpartons);
@@ -1982,10 +1985,7 @@ TH1D *hist_count=0;
   virtual void    AssignGen(std::vector<AK8Jet> &LJets, std::vector<GenParton> GenPartons);
   virtual bool    isBJet(AK4Jet jet, float btag_cut);
   virtual void    ReadTagger(std::vector<AK8Jet> &LJets, std::vector<Lepton> vleptons, std::vector<Muon> vmuons, std::vector<Electron> velectrons, TMVA::Reader *reader_electron, TMVA::Reader *reader_muon);
-  virtual void    Match_trigger(vector<bool> double_hlts, vector<bool> single_hlts,
-				vector<vector<float>> double_pt_cuts, vector<float> single_pt_cuts,
-				vector<vector<int>> double_pids, vector<int> single_pids,
-				vector<float> single_other_pt_cuts, vector<int> single_other_pids,
+  virtual void    Match_trigger(vector<Single_Trigger> vsinglelep_trig,vector<Double_Trigger> vdoublelep_trig,
 				vector<std::pair<int,TLorentzVector> > TrigRefObj,
 				Lepton lepcand_1, Lepton lepcand_2, vector<AK4Jet> Jets,
 				bool &trig_threshold_pass,
@@ -2034,6 +2034,7 @@ void Anal_Leptop_PROOF::Init(TTree *tree)
    fChain->SetBranchAddress("event_weight", &event_weight, &b_event_weight);
    fChain->SetBranchAddress("qscale", &qscale, &b_qscale);
    fChain->SetBranchAddress("npu_vert", &npu_vert, &b_npu_vert);
+   fChain->SetBranchAddress("npu_vert_true", &npu_vert_true, &b_npu_vert_true);
    fChain->SetBranchAddress("trig_value", &trig_value, &b_trig_value);
    fChain->SetBranchAddress("hlt_IsoMu24",&hlt_IsoMu24,&b_hlt_IsoMu24);
    fChain->SetBranchAddress("hlt_Mu50",&hlt_Mu50,&b_hlt_Mu50);

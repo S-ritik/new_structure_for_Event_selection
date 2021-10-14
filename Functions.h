@@ -109,8 +109,8 @@ double delta2R(double eta1, double phi1, double eta2, double phi2) {
   return sqrt(pow(eta1 - eta2,2) +pow(PhiInRange(phi1 - phi2),2));
 }
 
-double delta2R_vec(TLorentzVector vec1, TLorentzVector vec2) {
-  return sqrt(pow(vec1.Eta() - vec2.Eta(),2) +pow(PhiInRange(vec1.Phi() - vec2.Phi()),2));
+double delta2R(TLorentzVector vec1, TLorentzVector vec2) {
+  return sqrt(pow(vec1.Rapidity() - vec2.Rapidity(),2) +pow(PhiInRange(vec1.Phi() - vec2.Phi()),2));
 }
 
 double EW_toppt_cor(double pt){
@@ -124,23 +124,7 @@ double SF_TOP(double alpha, double beta, double pt0, double pt1)
 }
 */
 
-float Calc_MT(const TLorentzVector t1, const TLorentzVector t2)
-{
 
-float mT2 = 0;
-
-TLorentzVector vec1, vec2;
-vec1 = t1;
-vec2 = t2;
-
-vec1.SetPz(0);
-vec2.SetPz(0);
-
-mT2 = (vec1+vec2).M();
-
-return mT2;
-	
-}
 /*
 TLorentzVector neutrino_mom(TLorentzVector vec_lep, float MET_pt, float MET_phi, double seed){
 

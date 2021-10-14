@@ -30,22 +30,23 @@ class AK4Jet {
   float  qgl;
   bool   closebymu;
   bool   closebyel;
-  float delrlep;
-  float inleppt;
-  /*
-    float  reso;
+  float pt_resoup;
+  float mass_resoup;
+  float pt_resodn;
+  float mass_resodn;
+  float jesup_total;
+  float jesdn_total;
+/*    float  reso;
     float  reso_up;
     float  reso_dn;
     float jesup_pu;
     float jesup_rel;
     float jesup_scale;
-    float jesup_total;
     float jesdn_pu;
     float jesdn_rel;
     float jesdn_scale;
-    float jesdn_total;
-    int   genmatch;
-  */
+*/
+  //  int   genmatch;
   int AK8_neighbor_index;
   TLorentzVector p4;
 };
@@ -162,6 +163,7 @@ class Muon {
   float pt;
   float eta;
   float phi;
+  float y;
   float  mass; //need to ask Suman why he re-added it
   float charge;
   float trkvtx;
@@ -202,12 +204,13 @@ class Electron {
   float eta;
   float phi;
   float  mass; //need to ask Suman why he re-added it
-  float charge;
+  //float charge;
   bool id;
   bool Fallv2WP80;
   bool id_noIso;
   bool Fallv2WP80_noIso;
   float p;
+  float y;
   float dxy;
   float dz;
   bool ip;
@@ -249,6 +252,7 @@ class Lepton {
  public:
 
   float pt;
+  float y;
   float eta;
   float phi;
   float mass; //need to ask Suman why he re-added it
@@ -267,6 +271,7 @@ class AK4GenJet {
  public:
 
   float  eta;
+  float  y;
   float  mass;
   float  phi;
   float  pt;
@@ -282,6 +287,7 @@ class AK8GenJet {
  public:
 
   float  eta;
+  float  y;
   float  mass;
   float  phi;
   float  pt;
@@ -297,6 +303,7 @@ class GenParton{
  public:
 
   float  eta;
+  float  y;
   float  mass;
   float  phi;
   float  pt;
@@ -326,6 +333,25 @@ class TopQuark{
   vector<GenParton> daughter;
 
 } ;
+
+struct Single_Trigger{
+  bool single_hlts;
+  float single_pt_cuts;
+  int single_pids;
+  float single_other_pt_cuts;
+  int single_other_pids;
+};
+
+struct Double_Trigger{
+    bool double_hlts;
+    vector<float> double_pt_cuts;
+    vector<int> double_pids;
+};
+
+struct Cuts{
+  bool cut_pass;
+  string name;
+};
 
 bool AK4Jet_sort_by_pt(AK4Jet i1, AK4Jet i2)
 {
