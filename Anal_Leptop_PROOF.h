@@ -1016,10 +1016,14 @@ class Anal_Leptop_PROOF : public TSelector {
   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
   
   //New more variables stored as ntuple//
-float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, met_phi, delta_phil1_met, delta_phil2_met, delta_phibl1_met, delta_phibl2_met, rat_metpt_ak4pt, rat_metpt_ak8pt, rat_metpt_eventHT, mt_of_l1met, mt_of_l2met, no_ak4jets, no_ak4bjets, no_ak8jets, EventHT, extra_ak4j, ptsum_extra_ak4, extra_ak4jqgl, extra_ak4jdeepb, rat_extra_ak4jpt_lpt, ak81pt, ak81y, ak81mass, ak81sdmass, ak81deep_tvsqcd, ak81deep_wvsqcd, ak82pt, ak82y, ak82mass, ak82sdmass, ak82deep_tvsqcd, ak82deep_wvsqcd, M_bl1, M_bl2, M_jl1, M_jl2, delta_phibl1bl2, delta_phijl1jl2, deltaR_l1l2, /*deltaR_l1b1, deltaR_l2b1, deltaR_l1b2, deltaR_l2b2,*/ deltaR_l1j1, deltaR_l2j1, deltaR_l1j2, deltaR_l2j2, j1_btag_sc, j2_btag_sc, j1_btag_sc_ptsort, j2_btag_sc_ptsort, ak81NHad , ak81chrad ,ak81neuhad , ak81tau21 , ak81subhaddiff , ak81tau32 , ak82NHad , ak82chrad , ak82neuhad , ak82tau21 , ak82subhaddiff , ak82tau32,ak41pt,ak42pt,ak41mass,ak42mass,ak41delrlep,ak42delrlep,ak41inleppt, ak42inleppt,lep1pt,lep2pt, response_ak82,response_ak81;
+ float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, met_phi, delta_phil1_met, delta_phil2_met, delta_phibl1_met, delta_phibl2_met, rat_metpt_ak4pt, rat_metpt_ak8pt, rat_metpt_eventHT, mt_of_l1met, mt_of_l2met, no_ak4jets, no_ak4bjets, no_ak8jets, EventHT, extra_ak4j, ptsum_extra_ak4, extra_ak4jqgl, extra_ak4jdeepb, rat_extra_ak4jpt_lpt, ak81pt, ak81y, ak81mass, ak81sdmass, ak81deep_tvsqcd, ak81deep_wvsqcd, ak82pt, ak82y, ak82mass, ak82sdmass, ak82deep_tvsqcd, ak82deep_wvsqcd, M_bl1, M_bl2, M_jl1, M_jl2, delta_phibl1bl2, delta_phijl1jl2, deltaR_l1l2, /*deltaR_l1b1, deltaR_l2b1, deltaR_l1b2, deltaR_l2b2,*/ deltaR_l1j1, deltaR_l2j1, deltaR_l1j2, deltaR_l2j2,deltaR_j1j2 , j1_btag_sc, j2_btag_sc, j1_btag_sc_ptsort, j2_btag_sc_ptsort, ak81NHad , ak81chrad ,ak81neuhad , ak81tau21 , ak81subhaddiff , ak81tau32 , ak82NHad , ak82chrad , ak82neuhad , ak82tau21 , ak82subhaddiff , ak82tau32,ak41pt,ak42pt,ak41mass,ak42mass,ak41delrlep,ak42delrlep,ak41inleppt, ak42inleppt,lep1pt,lep2pt, response_ak82,response_ak81,extra_ak4mass,extra_ak4pt,tt_decay_mode,response_eventclass, pt_gen_l1, pt_gen_b1, pt_gen_lb1, deltaR_gen_lb1, pt_gen_l2, pt_gen_b2, pt_gen_lb2, deltaR_gen_lb2, delptbypt_gen_l1, delptbypt_gen_b1, delptbypt_gen_lb1, delptbypt_gen_l2, delptbypt_gen_b2, delptbypt_gen_lb2;
+
+  float in_M_l1l2, in_rat_l2pt_l1pt, in_deltaPhi_l1l2, in_l1pt_nearjet, in_l2pt_nearjet, in_met_pt, in_met_phi, in_delta_phil1_met, in_delta_phil2_met, in_delta_phibl1_met, in_delta_phibl2_met, in_rat_metpt_ak4pt, in_rat_metpt_ak8pt, in_rat_metpt_eventHT, in_mt_of_l1met, in_mt_of_l2met, in_no_ak4jets, in_no_ak4bjets, in_no_ak8jets, in_EventHT, in_extra_ak4j, in_ptsum_extra_ak4, in_extra_ak4jqgl, in_extra_ak4jdeepb, in_rat_extra_ak4jpt_lpt, in_ak81pt, in_ak81y, in_ak81mass, in_ak81sdmass, in_ak81deep_tvsqcd, in_ak81deep_wvsqcd, in_ak82pt, in_ak82y, in_ak82mass, in_ak82sdmass, in_ak82deep_tvsqcd, in_ak82deep_wvsqcd, in_M_bl1, in_M_bl2, in_M_jl1, in_M_jl2, in_delta_phibl1bl2, in_delta_phijl1jl2, in_deltaR_l1l2, /*deltaR_l1b1, deltaR_l2b1, deltaR_l1b2, deltaR_l2b2,*/ in_deltaR_l1j1, in_deltaR_l2j1, in_deltaR_l1j2, in_deltaR_l2j2,in_deltaR_j1j2 , in_j1_btag_sc, in_j2_btag_sc, in_j1_btag_sc_ptsort, in_j2_btag_sc_ptsort, in_ak81NHad , in_ak81chrad ,in_ak81neuhad , in_ak81tau21 , in_ak81subhaddiff , in_ak81tau32 , in_ak82NHad , in_ak82chrad , in_ak82neuhad , in_ak82tau21 , in_ak82subhaddiff , in_ak82tau32,in_ak41pt,in_ak42pt,in_ak41mass,in_ak42mass,in_ak41delrlep,in_ak42delrlep,in_ak41inleppt, in_ak42inleppt,in_lep1pt,in_lep2pt, in_response_ak82,in_response_ak81,in_extra_ak4mass,in_extra_ak4pt, in_dirgltrthr, in_dirglthrmin;
+
+ int ak81hase,ak81hasmu,ak82hase,ak82hasmu,ak81hasgene,ak81hasgenmu,ak81hasgenb,ak81hasgenhasalldecay,ak82hasgene,ak82hasgenmu,ak82hasgenb,ak82hasgenhasalldecay;
   int genmatch_sc2,genmatch_sc1,topmatchvar;
 
-  double dirgltrthr, dirglthrmin; 
+  float dirgltrthr, dirglthrmin;
   
   static const int njetmx = 20;
   static const int njetmxAK8 = 10;
@@ -1280,7 +1284,13 @@ float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, 
    Float_t         genparteta[npartmx];
    Float_t         genpartphi[npartmx];
    Float_t         genpartm[npartmx];
-   
+   Int_t           nLHEparticles;
+   Int_t           LHEpartpdg[npartmx];
+   Float_t         LHEpartpt[npartmx];
+   Float_t         LHEparteta[npartmx];
+   Float_t         LHEpartphi[npartmx];
+   Float_t         LHEpartm[npartmx];
+
    Int_t           genpartpair[npartmx];  //Not using many of them now
    //Int_t           ngenelectrons;
    Float_t         genelectronpt[npartmx];
@@ -1610,7 +1620,14 @@ float M_l1l2, rat_l2pt_l1pt, deltaPhi_l1l2, l1pt_nearjet, l2pt_nearjet, met_pt, 
    TBranch        *b_genparteta;   //!
    TBranch        *b_genpartphi;   //!
    TBranch        *b_genpartm;   //!
-   
+
+   TBranch        *b_nLHEparticles;   //!
+   TBranch        *b_LHEpartpdg;   //!
+   TBranch        *b_LHEpartpt;   //!
+   TBranch        *b_LHEparteta;   //!
+   TBranch        *b_LHEpartphi;   //!
+   TBranch        *b_LHEpartm;   //!
+
    TBranch        *b_nmuons;   //!
    TBranch        *b_muonisPF;   //!
    TBranch        *b_muonisGL;   //!
@@ -1740,9 +1757,9 @@ TH1D *hist_count=0;
 
 	const char* prvar_name[nprvar] = {"pr_dummy","pr_nprime","pr_trigger","pr_nlepton","pr_lepmatch","pr_lepmattrigger","pr_leppt1","pr_lepchargeproduct","pr_nelec","pr_nmuon","pr_nak8","pr_nak4","pr_dr_ak81_ak41","pr_dr_ak81_lep1","pr_dr_ak82_ak42","pr_dr_ak82_lep2","pr_nbjets","pr_ptak4", "pr_melel", "pr_melmu", "pr_mmumu","pr_PFMET","pr_trigger_after","pr_extra_muon_pt","pr_extra_electron_pt","pr_pt_ak82"};
 
-	int prvar_bins[nprvar] = {100,    101,   65,   12,   6,    2, 60,   16,    10,   10,   10,   20, 60, 60, 60, 60, 10,  60, 60,   60,   60, 60, 65, 60, 60,60};
+	int prvar_bins[nprvar] = {100,    101,   65,   12,   6,    2, 60,   16,    10,   10,   10,   20, 60, 60, 60, 60, 10,  60, 60,   60,   60, 60, 65, 120, 120,60};
 	float prvar_low[nprvar] =  {0.0,   -0.5,  -0.5, -0.5,  -0.5, -0.5, 0.0, -200, -0.5, -0.5, -0.5, -0.5,  0,  0, 0,  0, -0.5,    0,   0,   0,   0, 0, -0.5, 10, 10,200};
-	float prvar_high[nprvar] ={100.0, 100.5, 64.5, 11.5, 5.5,  1.5, 700,  200,  9.5,  9.5,  9.5, 19.5, 6.5, 6.5, 6.5, 6.5, 9.5, 360, 600, 600,  600, 800, 64.5, 300, 300,1500};
+	float prvar_high[nprvar] ={100.0, 100.5, 64.5, 11.5, 5.5,  1.5, 700,  200,  9.5,  9.5,  9.5, 19.5, 6.5, 6.5, 6.5, 6.5, 9.5, 360, 900, 900,  900, 800, 64.5, 150, 150,1000};
 
 	static const int ntypes=5;
 	static const int ntcount=3;
@@ -1818,8 +1835,9 @@ TH1D *hist_count=0;
 																		"deltaR_l1_2","deltaR_l2_2","deltaR_bj1_2","deltaR_bj2_2","tau32_1","tau32_2"  //47
 	};
 
-	double obs_low[nobshist] = {200,-2.5,0,0,0,0,-0.15,0,0,0,0,0,-1.0,-1.0,-0.5,-0.5,-0.5,-0.5,0,0,0,0,0,200,-2.5,0,0,0,0,-0.15,0,0,0,0,0,-1.0,-1.0,-0.5,-0.5,-0.5,-0.5,0,0,0,0,0,0};
-	double obs_up[nobshist] = {3100,2.5,300,1,1,500,0.15,1,1,1,1,1,1,1,1.5,1.5,1.5,1.5,5,5,5,5,5,3100,2.5,300,1,1,300,0.15,1,1,1,1,1,1,1,1.5,1.5,1.5,1.5,5,5,5,5,1,1};
+	double obs_low[nobshist] = {200,-2.5,0,0,0,0,-0.2,0,0,0,0,0,-1.0,-1.0,-0.5,-0.5,-0.5,-0.5,0,0,0,0,0,200,-2.5,0,0,0,0,-0.2,0,0,0,0,0,-1.0,-1.0,-0.5,-0.5,-0.5,-0.5,0,0,0,0,0,0};
+	double obs_up[nobshist] = {2100,2.5,300,1,1,500,0.2,1,1,1,1,1,1,1,1.5,1.5,1.5,1.5,5,5,5,5,5,2100,2.5,300,1,1,300,0.2,1,1,1,1,1,1,1,1.5,1.5,1.5,1.5,5,5,5,5,1,1};
+
 
 	int obs_nbins[nobshist] = {30,30,30,30,30,30,30,30,60,30,30,30,60,60,2,2,2,2,30,30,30,30
 														 ,30,30,30,30,30,30,30,30,30,60,30,30,30,60,60,2,2,2,2,30,30,30,30,30,30};
@@ -1842,11 +1860,24 @@ TH1D *hist_count=0;
 	int obs_nbins_genmatch[nhistgenmatch] = {30,30,30,60,30,30,30,30,30,30,60,30,30,30};
 	TH1D *hist_init_pu_sys[18][2]={{0}};
 
-	//  const char *new_var_names[9] = {"M_l1l2","rat_l1l2","deltaPhi_l1l2","l1pt_wrtjet","l2pt_wrtjet","MET","MET_{#eta}","delta_phil1_met","delta_phil2_met"};
+    static const int ntreevarhist = 47;
+    TH1D *hist_treevar[ntreevarhist];
 
-	//"MET","phi(lep1)","phi(lep2)","phi(MET)","pT(lep1)","pT(lep2)","pT(jet)", "pT(bjet)","deltaPhi(MET,lep)","deltaPhi(MET,lep2)","deltaPhi(MET,jet)","deltaPhi(MET,bjet)","mT(lep1)","mT(lep2)","R_(m)"};
-
-	//const char *new_var_title[9] = {"M_{l1,l2}","rat_{l1,l2}","#delta#phi_{l1,l2}","l1p_{T}wrtj","l2p_{T}wrtj","MET","MET_{#eta}","#delta#phi_{l1,MET}","#delta#phi_{l2,MET}"};
+    const char *treevarnames[ntreevarhist] = {"M_l1l2","rat_l2pt_l1pt","deltaPhi_l1l2",  //3
+        "l1pt_nearjet","l2pt_nearjet","met_pt","met_phi",                                //7
+        "M_bl1","M_bl2",                                                                 //9
+        "delta_phil1_met","delta_phil2_met","delta_phibl1_met","delta_phibl2_met",       //13
+        "rat_metpt_ak4pt","rat_metpt_ak8pt","rat_metpt_eventHT",                         //16
+        "mt_of_l1met","mt_of_l2met","no_ak4jets","no_ak4bjets","no_ak8jets","EventHT",   //22
+        "extra_ak4j","ptsum_extra_ak4","extra_ak4pt","extra_ak4mass","extra_ak4jqgl",    //27
+        "extra_ak4jdeepb","rat_extra_ak4jpt_lpt","ak81deep_tvsqcd","ak81deep_wvsqcd",    //31
+        "ak82deep_tvsqcd","ak82deep_wvsqcd",                                             //33
+        "delta_phibl1bl2","deltaR_l1l2","deltaR_l1j1","deltaR_l2j1",                     //37
+        "deltaR_l1j2","deltaR_l2j2","j1_btag_sc","j2_btag_sc",                           //41
+        "dirgltrthr","dirglthrmin","response_ak81","response_ak82","deltaR_l1l2","response_eventclass"};       //46
+    double treevar_low[ntreevarhist] = {100,0,-3.15,0,0,50,-3.15,0,0,-3.15,-3.15,-3.15,-3.15,0,0,0,0,0,-0.5,-0.5,1.5,400,-0.5,0,0,0,0,0,0,0,0,0,0,-3.15,1,0,1,1,0,0,0,0,0,-1,-1,1,-1};
+    double treevar_up[ntreevarhist] = {1000,8,3.15,250,250,400,3.15,200,200,3.15,3.15,3.15,3.15,2,0.8,0.3,1000,1000,10.5,5.5,5.5,4000,7.5,500,300,200,1,1,7,1,1,1,1,3.15,5,1,5,5,1,1,1,0.25,0.5,1,1,5,1};
+    int treevar_nbins[ntreevarhist] = {30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,11,6,4,30,8,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30};
 
 	const char *initnames[nhist_in] = {"matchN_l1","matchN_l2","N_PV_sel","NJets_AK4","NBJets_AK4","NJets_AK8","mll","l1pt","l1eta","l1phi","l2pt","l2eta","l2phi","ak41jetpt","ak41jeteta","ak41jetphi","ak42jetpt","ak42jeteta","ak42jetphi"};
 
@@ -1856,35 +1887,48 @@ TH1D *hist_count=0;
 	//double new_var_up[9] = {500.0,2.0,5.0,1000.0,1000.0,500.0,2.5,5.0,5.0};//1000,3.15,3.15,3.15,500,500,3000,500,3.15,3.15,3.15,3.15,500,500,5.};
 	//int new_var_nbins[9] = {25,25,50,50,50,25,25,50,50};//30,25,25,25,25,25,30,25,25,25,25,25,25,25,25};
 
-	double ini_low[nhist_in] = {0.0,0.0,-0.1,0.5,0.5,0.5,0.0,30.0,-2.5,-3.15,30.0,-2.5,-3.15,30.0,-2.5,-3.15,30.0,-2.5,-3.15};
-	double ini_up[nhist_in] = {1.0,1.0,99.9,10.5,10.5,10.5,800.0,900.0,2.5,3.15,900.0,2.5,3.15,900.0,2.5,3.15,900.0,2.5,3.15};
-	int ini_nbins[nhist_in] = {60,60,100,11,11,11,30,60,30,30,60,30,30,60,30,30,60,30,30};
+	double ini_low[nhist_in] = {0.0,0.0,-0.1,-0.5,-0.5,-0.5,84.5,30.0,-2.5,-3.15,30.0,-2.5,-3.15,30.0,-2.5,-3.15,30.0,-2.5,-3.15};
+	double ini_up[nhist_in] = {1.0,1.0,99.9,10.5,10.5,10.5,1000.0,900.0,2.5,3.15,900.0,2.5,3.15,1400.0,2.5,3.15,1400.0,2.5,3.15};
+	int ini_nbins[nhist_in] = {60,60,100,11,11,11,60,60,30,30,60,30,30,60,30,30,60,30,30};
 
 	TH1D *hist_npv;
 	TH1D *hist_npv_nopuwt;
 
-    const static int nhistdeltaR=16;
+    const static int nhistdeltaR=8;
     TH1D *hist_genmatch_deltaR[nhistdeltaR];
-    const char *names_genmatch_deltaR[nhistdeltaR] = {"deltaR_genlep_ak8_1","deltaR_genb_ak8_1","deltaR_genblep_ak8_1","deltaR_gentop_ak8_1","deltaR_genlep_ak8_2","deltaR_genb_ak8_2","deltaR_genblep_ak8_2","deltaR_gentop_ak8_2","deltaR_genlep_ak8_1_withbtagging","deltaR_genb_ak8_1_withbtagging","deltaR_genblep_ak8_1_withbtagging","deltaR_gentop_ak8_1_withbtagging","deltaR_genlep_ak8_2_withbtagging","deltaR_genb_ak8_2_withbtagging","deltaR_genblep_ak8_2_withbtagging","deltaR_gentop_ak8_2_withbtagging"};  /// Used in the code
+    const char *names_genmatch_deltaR[nhistdeltaR] = {"deltaR_genlep_ak8_1","deltaR_genb_ak8_1","deltaR_genblep_ak8_1","deltaR_gentop_ak8_1","deltaR_genlep_ak8_2","deltaR_genb_ak8_2","deltaR_genblep_ak8_2","deltaR_gentop_ak8_2"};  /// Used in the code
 
-    const char *titles_genmatch_deltaR[nhistdeltaR] = {"deltaR(gen lep, leading lep jet)","deltaR(gen b, leading AK4 jet)","deltaR(gen (b +lep), leading AK8 jet)","deltaR(gen top, leading AK8 jet)","deltaR(gen lep, sub leading lep jet)","deltaR(gen b, sub leading AK4 jet)","deltaR(gen (b +lep), sub leading AK8 jet)","deltaR(gen top, sub leading AK8 jet)","deltaR(gen lep, leading lep jet) with btagging","deltaR(gen (b +lep), leading AK8 jet) with btagging","deltaR(gen b, leading AK8 jet) with  btagging","deltaR(gen top, leading AK8 jet) with btagging","deltaR(gen lep, sub leading lep jet) with btagging","deltaR(gen b, sub leading AK4 jet) with btagging","deltaR(gen (b+lep), sub leading AK8 jet) with btagging","deltaR(gen top, sub leading AK8 jet) with btagging"};
+    const char *titles_genmatch_deltaR[nhistdeltaR] = {"deltaR(gen lep, leading lep jet)","deltaR(gen b, leading AK4 jet)","deltaR(gen (b +lep), leading AK8 jet)","deltaR(gen top, leading AK8 jet)","deltaR(gen lep, sub leading lep jet)","deltaR(gen b, sub leading AK4 jet)","deltaR(gen (b +lep), sub leading AK8 jet)","deltaR(gen top, sub leading AK8 jet)"};
 
-    const static int nhistdrsc=4;
+    const static int nhistdrsc=2;
     TH1D *hist_genmatch_deltaR_score[nhistdrsc];
-    const char *names_genmatch_deltaR_score[nhistdrsc] = {"genmatch_score_ak8_1","genmatch_score_ak8_2","genmatch_score_ak8_1_withbtagging","genmatch_score_ak8_2_withbtagging"};
+    const char *names_genmatch_deltaR_score[nhistdrsc] = {"genmatch_score_ak8_1","genmatch_score_ak8_2"};
 
-    const char *titles_genmatch_deltaR_score[nhistdrsc] = {"genmatching score of leading AK8 jet","genmatching score of sub leading AK8 jet","genmatching score of leading AK8 jet with btagging","genmatching score of sub leading AK8 jet with btagging"};
+    const char *titles_genmatch_deltaR_score[nhistdrsc] = {"genmatching score of leading AK8 jet","genmatching score of sub leading AK8 jet"};
 
-    const static int ncutflow=19;
+    const static int ncutflow=16;
     TH1D *hist_met_cutflow[ncutflow];
 
+    TH1D *hist_elidvar[5];
+    const char *names_elidvar[5] = {"el_sigmaietaieta","el_r9full","el_sigmaiphiiphi","el_pfisol_sumchhadpt","el_hovere"};
+    double elidvar_low[5] = {0,0,0,0,0};
+	double elidvar_up[5] = {0.07,5,0.08,300,2};
+	int elidvar_nbins[5] = {30,30,30,30,30};
+
+    TH1D *hist_muidvar[5];
+    const char *names_muidvar[5] = {"mu_insubmassrat","mu_insubptrat","mu_insubIfarbyI0","mu_insub_invmass","muon_hit"};
+    double muidvar_low[5] = {0,0,0,0,-0.5};
+	double muidvar_up[5] = {1,1,0.3,300,50.5};
+	int muidvar_nbins[5] = {30,30,30,30,51};
 
     TH2D *hist_2d_deltaR_vsbtagsc[2];
     TH2D *hist_2d_pt_vsbtagsc[4];
     TH2D *hist_2d_deltaR_vspt[2];
 
-    TH1D *hist_count_lep, *hist_elmvaid,*hist_delr_ele_ak41[2],*hist_delr_ele_ak42[2];
-    TH2D *hist_2d_pt_genlepvsb;
+    TH1D *hist_npu_vert_true,*hist_npu_vert;
+    TH1D *hist_count_lep[2];
+    TH1D *hist_count_top;
+    TH2D *hist_2d_pt_genlepvsb1, *hist_2d_pt_genlepvsb2, *hist_2d_pt_genlepvsb3, *hist_2d_pt_genlepvsb4, *hist_2d_pt_genlepvsb5, *hist_2d_pt_gentopvsgentop;
 
 	
 	float in_pfjetAK8NHadF;
@@ -1894,6 +1938,7 @@ TH1D *hist_count=0;
 	float in_pfjetAK8chrad;
 	float in_pfjetAK8sdmass;
 	float in_pfjetAK8eldxy_sv;
+    float in_pfjetAK8matchedeldxy_sv;
 	float in_pfjetAK8matchedelcleta;
 	float in_pfjetAK8matchedelpt;
 	float in_pfjetAK8matchedelsigmaieta;
@@ -1956,10 +2001,11 @@ TH1D *hist_count=0;
      TString dir = "/home/ritik/Desktop/code2/";
 	//TString weightfile1 = testdir + TString("TMVAClassification_BDTG_elIDvarv3.weights.xml");
 	
-	TString weightfile1 = dir + TString("TMVAClassification_BDTG_elIDvar_Jan2021Corr_TTbarUL18.weights.xml");
-	TString weightfile2 = dir + TString("TMVAClassification_BDTG_rnu.weights.xml");
+	//TString weightfile1 = dir + TString("TMVAClassification_BDTG_elIDvar_Jan2021Corr_TTbarUL18.weights.xml");
+     TString weightfile1 = dir + TString("TMVAClassification_BDTG_for_eltop_pt300_weights.xml"/*"TMVAClassification_BDTG_for_eltop_pt300_withqcdbkg_weights.xml"*/);
+	TString weightfile2;
 	TString weightfile3 = dir + TString("TMVAClassification_only7varsnomatchel_BDTG.weights.xml");
-	TString weightfile4 = dir + TString("TMVAClassification_BDTG_muIDvar_Jan2021Corr_TTbarUL18.weights.xml");
+	TString weightfile4 = dir + TString("TMVAClassification_BDTG_for_mutop_pt300_weights.xml"/*"TMVAClassification_BDTG_for_mutop_pt300_withqcdbkg_weights.xml"*/);
 	
 	//float ptcut = 200; //Need to ask Suman how ptcut of ljet is then set if it is not declared here
   
@@ -1979,6 +2025,7 @@ TH1D *hist_count=0;
   virtual void    getAK8jets(std::vector<AK8Jet> &LJets, float ptcut, float etacut, bool isMC, int maxsize);
   //virtual void    LeptonJet_cleaning(std::vector <Electron> velectrons,std::vector <Muon> vmuons, float dR_cut);
   virtual void    getPartons(std::vector<GenParton> &GenPartons, int maxsize);
+  virtual void    getLHEParticles(std::vector<LHEparticle> &lheparticles, int maxsize);
   virtual void    getLHETops(std::vector<GenParton> &LHETops, std::vector<GenParton> GenPartons);
   virtual void    getGENTops(vector<TopQuark> &gentops, vector<GenParton> genpartons);
   virtual void    TopAssignment_toJet(std::vector<AK8Jet> &LJets, std::vector<GenParton> lhetops, std::vector<TopQuark> gentops);
@@ -2217,6 +2264,12 @@ void Anal_Leptop_PROOF::Init(TTree *tree)
    fChain->SetBranchAddress("genparteta", genparteta, &b_genparteta);
    fChain->SetBranchAddress("genpartphi", genpartphi, &b_genpartphi);
    fChain->SetBranchAddress("genpartm", genpartm, &b_genpartm);
+   fChain->SetBranchAddress("nLHEparticles", &nLHEparticles, &b_nLHEparticles);
+   fChain->SetBranchAddress("LHEpartpdg", LHEpartpdg, &b_LHEpartpdg);
+   fChain->SetBranchAddress("LHEpartpt", LHEpartpt, &b_LHEpartpt);
+   fChain->SetBranchAddress("LHEparteta", LHEparteta, &b_LHEparteta);
+   fChain->SetBranchAddress("LHEpartphi", LHEpartphi, &b_LHEpartphi);
+   fChain->SetBranchAddress("LHEpartm", LHEpartm, &b_LHEpartm);
    
    fChain->SetBranchAddress("nmuons", &nmuons, &b_nmuons);
    fChain->SetBranchAddress("muonisPF", muonisPF, &b_muonisPF);

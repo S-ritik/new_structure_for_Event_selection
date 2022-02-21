@@ -160,6 +160,7 @@ class Muon {
 
  public:
 
+  bool looseid;
   float pt;
   float eta;
   float phi;
@@ -200,6 +201,7 @@ class Electron {
 
  public:
 
+  bool looseid;
   float pt;
   float eta;
   float phi;
@@ -322,6 +324,19 @@ class GenParton{
   
 } ;
 
+struct LHEparticle{
+
+  float  eta;
+  float  y;
+  float  mass;
+  float  phi;
+  float  pt;
+  int pdgId;
+
+  TLorentzVector p4;
+
+} ;
+
 class TopQuark{
   // gives 4-momentum of top quark and a vector of its daughters                                    
   //(length of the vector of daughters should be 3)                                                 
@@ -421,7 +436,7 @@ int get_nearest_AK4(vector<AK4Jet>  & objs, TLorentzVector tmp_vec, float minR =
   float btag_score_max=-1;
   for(unsigned iobs=0; iobs<objs.size(); iobs++){
     if(objs[iobs].AK8_neighbor_index>=0 ) continue;
-    if(delta2R(objs[iobs].y,objs[iobs].phi,tmp_vec.Rapidity(),tmp_vec.Phi()) < minR && objs[iobs].btag_DeepFlav > btag_score_max){
+    if(delta2R(objs[iobs].p4,tmp_vec) < minR && objs[iobs].btag_DeepFlav > btag_score_max){
       btag_score_max = objs[iobs].btag_DeepFlav;
       nearest = iobs;
     }
@@ -434,12 +449,13 @@ int get_nearest_lepton(vector<Lepton>  & objs, TLorentzVector tmp_vec, int lepto
   // gives the index of lepton nearest to the tmp_vec vector                                  
 
   int nearest = -1;
+  float ptmax = -99;
   for(unsigned iobs=0; iobs<objs.size(); iobs++){
     if(lepton_pdgid>=0 && objs[iobs].pdgId!=lepton_pdgid) continue;
     if(objs[iobs].AK8_neighbor_index>=0 ) continue;
-    float tmpR = delta2R(objs[iobs].eta,objs[iobs].phi,tmp_vec.Rapidity(),tmp_vec.Phi());
-    if( tmpR < minR){
-      minR = tmpR;
+    float tmpR = delta2R(objs[iobs].p4,tmp_vec);
+    if( tmpR < minR && objs[iobs].pt > ptmax){
+      ptmax = objs[iobs].pt;
       nearest = iobs;
     }
   }
@@ -454,8 +470,8 @@ int get_nearest_AK8Jet(vector<AK8Jet>  & objs, TLorentzVector tmp_vec, float min
                          
   int nearest = -1;
   for(unsigned iobs=0; iobs<objs.size(); iobs++){
-    if(delta2R(objs[iobs].y,objs[iobs].phi,tmp_vec.Rapidity(),tmp_vec.Phi()) < minR){
-      minR = delta2R(objs[iobs].y,objs[iobs].phi,tmp_vec.Rapidity(),tmp_vec.Phi()) ;
+    if(delta2R(objs[iobs].p4,tmp_vec) < minR){
+      minR = delta2R(objs[iobs].p4,tmp_vec) ;
       nearest = iobs;
     }
   }
