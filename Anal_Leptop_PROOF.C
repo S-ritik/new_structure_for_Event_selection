@@ -1617,7 +1617,7 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
 
   if(isTT && isMC &&  gentops.size() > 1)
     {
-      int ilep = (vleptons[0].pdgId < 0) ? 0 : 1;   ///  choosing top first ie anti lepton in final state
+      int ilep = (vleptons[0].pdgId > 0) ? 0 : 1;   ///  choosing top first ie anti lepton in final state
       int itop = (gentops[0].daughter[0].pdgId > 0) ? 0 : 1;
       pt_gen_l1 = gentops[itop].daughter[0].p4.Pt();
       pt_gen_b1 = gentops[itop].daughter[2].p4.Pt();
