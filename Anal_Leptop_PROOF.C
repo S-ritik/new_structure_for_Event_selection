@@ -371,6 +371,15 @@ void Anal_Leptop_PROOF::SlaveBegin(TTree * /*tree*/)
   hist_2d_pt_gentopvsgentop = new TH2D("hist_2d_ptgentop1_ptgentop2","pt of subleading gen top vs pt of leading gen top ",120,20,2000,120,20,2000);
   hist_2d_pt_gentopvsgentop->Sumw2();
 
+  hist_delptbypt[0]= new TH1D("hist_delptbypt_genlep","del pt by pt between gen and reco lep",60,0,0.2);
+  hist_delptbypt[0]->Sumw2();
+
+  hist_delptbypt[1] = new TH1D("hist_delptbypt_genb","del pt by pt between gen b quark and reco AK4",60,0,1.1);
+  hist_delptbypt[1]->Sumw2();
+
+  hist_delptbypt[2] = new TH1D("hist_delptbypt_genlepbsys","del pt by pt between gen b+lep sys and reco AK8",60,0,1.1);
+  hist_delptbypt[2]->Sumw2();
+
   reader1 = new TMVA::Reader( "BDTG_Re" );
   reader1->AddVariable("selpfjetAK8NHadF", &in_pfjetAK8NHadF);
   reader1->AddVariable("selpfjetAK8neunhadfrac", &in_pfjetAK8neunhadfrac);
@@ -1083,6 +1092,39 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
   //some variable distributions before using cuts on them//                        
   //if (LJets.size()<2) return kFALSE;
   //hist_count->Fill(4,weight);
+
+  vector <AK4GenJet> GenJets;
+  if(isMC){
+    getAK4genjets(GenJets,AK4jet_pt_cut,absetacut);
+  }
+  
+  int genak4_index[2]={-1,-1};
+
+  if(isMC && isTT){
+  
+    for(int itop = 0; itop<2 ;itop++)
+      {
+	float dr = 0.4;
+	for(int ij=0; ij < (int)GenJets.size(); ij++)
+	  {
+	    if(delta2R(gentops[itop].daughter[2].p4,GenJets[ij].p4) < dr)
+	      {
+		genak4_index[itop] = ij;
+		dr = delta2R(gentops[itop].daughter[2].p4,GenJets[ij].p4);
+	      }
+	  }
+      }
+    for(int itop = 0; itop < (int)gentops.size(); itop++){
+      for(int ij = 0 ; ij < (int)LJets.size(); ij++)
+	hist_delptbypt[2]->Fill( ( abs((gentops[itop].daughter[0].p4 + gentops[itop].daughter[2].p4).Pt() - LJets[ij].pt)) / LJets[ij].pt ,weight);
+      
+      for(int ij = 0 ; ij < (int)vleptons.size(); ij++)
+	hist_delptbypt[0]->Fill( abs((gentops[itop].daughter[0].p4.Pt() - vleptons[ij].pt)) / vleptons[ij].pt ,weight);
+      
+      for(int ij = 0 ; ij < (int)Jets.size(); ij++)
+	if(genak4_index[itop] > -0.5)  hist_delptbypt[1]->Fill( abs(GenJets[genak4_index[itop]].p4.Pt() - Jets[ij].pt) / Jets[ij].pt ,weight);
+    }
+  }
   
   vector<Cuts> event_cuts;
   //Before this stage 3 event selection cuts applied offline => at least 1 primary vertex, at least one listed trigger fired, at least two leptons with pt > 30 GeV and they are closest (< 0.7) to leading AK8 jets, at least two large radius jets.
@@ -1617,15 +1659,18 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
 
   if(isTT && isMC &&  gentops.size() > 1)
     {
+      AssignGen(LJets,genpartons);
+
       int ilep = (vleptons[0].pdgId > 0) ? 0 : 1;   ///  choosing top first ie anti lepton in final state
       int itop = (gentops[0].daughter[0].pdgId > 0) ? 0 : 1;
       pt_gen_l1 = gentops[itop].daughter[0].p4.Pt();
       pt_gen_b1 = gentops[itop].daughter[2].p4.Pt();
       pt_gen_lb1 = (gentops[itop].daughter[0].p4 + gentops[itop].daughter[2].p4).Pt();
       deltaR_gen_lb1 = delta2R(gentops[itop].daughter[0].p4 , gentops[itop].daughter[2].p4);
-      delptbypt_gen_l1 = (gentops[itop].daughter[0].p4 - vleptons[ilep].p4).P()/gentops[itop].daughter[0].p4.P();
-      delptbypt_gen_b1 = (gentops[itop].daughter[2].p4 - Jets[ilep].p4).P()/gentops[itop].daughter[2].p4.P();
-      delptbypt_gen_lb1 = (gentops[itop].daughter[0].p4 + gentops[itop].daughter[2].p4 - LJets[ilep].p4).P()/(gentops[itop].daughter[0].p4 + gentops[itop].daughter[2].p4).P();
+      delptbypt_gen_l1 = abs((pt_gen_l1 - vleptons[ilep].pt))/vleptons[ilep].pt;
+      if(genak4_index[itop] > -0.5) delptbypt_gen_b1 = abs(GenJets[genak4_index[itop]].p4.Pt() - Jets[ilep].pt) / Jets[ilep].pt;
+      else delptbypt_gen_b1 = 100;
+      delptbypt_gen_lb1 = abs((pt_gen_lb1 - LJets[ilep].pt))/ LJets[ilep].pt;
 
       ak81hasgene = (int)LJets[ilep].haselectron; 
       ak81hasgenmu = (int)LJets[ilep].hasmuon;
@@ -1639,9 +1684,10 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
       pt_gen_b2 = gentops[itop].daughter[2].p4.Pt();
       pt_gen_lb2 = (gentops[itop].daughter[0].p4 + gentops[itop].daughter[2].p4).Pt();
       deltaR_gen_lb2 = delta2R(gentops[itop].daughter[0].p4 , gentops[itop].daughter[2].p4);
-      delptbypt_gen_l2 = (gentops[itop].daughter[0].p4 - vleptons[ilep].p4).P()/gentops[itop].daughter[0].p4.P();
-      delptbypt_gen_b2 = (gentops[itop].daughter[2].p4 - Jets[ilep].p4).P()/gentops[itop].daughter[2].p4.P();
-      delptbypt_gen_lb2 = (gentops[itop].daughter[0].p4 + gentops[itop].daughter[2].p4 - LJets[ilep].p4).P()/(gentops[itop].daughter[0].p4 + gentops[itop].daughter[2].p4).P();
+      delptbypt_gen_l2 = abs((pt_gen_l2 - vleptons[ilep].pt))/vleptons[ilep].pt;
+      if(genak4_index[itop] > -0.5) delptbypt_gen_b2 =  abs(GenJets[genak4_index[itop]].p4.Pt() - Jets[ilep].pt) / Jets[ilep].pt;
+      else delptbypt_gen_b2 = 100;
+      delptbypt_gen_lb2 = abs((pt_gen_lb2 - LJets[ilep].pt))/LJets[ilep].pt;
 
       ak82hasgene = (int)LJets[ilep].haselectron; 
       ak82hasgenmu = (int)LJets[ilep].hasmuon;
@@ -1650,7 +1696,7 @@ Bool_t Anal_Leptop_PROOF::Process(Long64_t entry)
     }
   
   Tnewvar->Fill();
-
+  
   hist_treevar[0]->Fill(M_l1l2,weight);
   hist_treevar[1]->Fill(rat_l2pt_l1pt,weight);
   hist_treevar[2]->Fill(deltaPhi_l1l2,weight);

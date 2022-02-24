@@ -380,7 +380,14 @@ bool AK8Jet_sort_by_pt(AK8Jet i1, AK8Jet i2)
   return (i1.pt > i2.pt);                                                                           
 }                                                                                                   
 void sorted_by_pt(vector<AK8Jet> & objs) {                                                          
-  sort(objs.begin(), objs.end(), AK8Jet_sort_by_pt);                                                
+  sort(objs.begin(), objs.end(), AK8Jet_sort_by_pt);
+}
+bool AK4GenJet_sort_by_pt(AK4GenJet i1, AK4GenJet i2)
+{
+  return (i1.pt > i2.pt);
+}
+void sorted_by_pt(vector<AK4GenJet> & objs) {
+  sort(objs.begin(), objs.end(), AK4GenJet_sort_by_pt);
 }
 bool Muon_sort_by_pt(Muon i1, Muon i2)                                                                           
 {                                                                                                                

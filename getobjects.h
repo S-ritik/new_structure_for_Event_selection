@@ -12,11 +12,11 @@ void Anal_Leptop_PROOF::getmuons(std::vector<Muon> &vmuons, float ptcut=25, floa
     bool mu_id = Muon_TightID(muonisGL[mu],muonisPF[mu],
 			      muonchi[mu],muonhit[mu],muonmst[mu],
 			      muontrkvtx[mu],muondz[mu],muonpixhit[mu],muontrklay[mu]);
-//    if(!mu_id) continue;
+    //    if(!mu_id) continue;
     bool mu_iso = Muon_Iso_ID(muonpfiso[mu]);
     //if(!mu_iso) continue;
 
-//    if(fabs(muontrkvtx[mu])>dxy_cut || fabs(muondz[mu])>dz_cut) continue;
+    //    if(fabs(muontrkvtx[mu])>dxy_cut || fabs(muondz[mu])>dz_cut) continue;
 
     Muon vmuon;
 
@@ -72,11 +72,11 @@ void Anal_Leptop_PROOF::getelectrons(std::vector<Electron> &velectrons, float pt
     if(fabs(eleta[ie])>etacut /*|| (fabs(eleta[ie])>1.4442 && fabs(eleta[ie])<1.566)*/)  continue;
 
     // if(!elmvaid[ie]) continue;
-  //  if(!elmvaid_noIso[ie]) continue;
+    //  if(!elmvaid_noIso[ie]) continue;
 
-   // if(!((fabs(elsupcl_eta[ie])<1.4442 && fabs(eldxytrk[ie])<dxy_cut && fabs(eldztrk[ie])<dz_cut)||(fabs(elsupcl_eta[ie])>1.5660 && fabs(elsupcl_eta[ie])<2.5 && fabs(eldxytrk[ie])<(2*dxy_cut) && fabs(eldztrk[ie])<(2*dz_cut)))) continue;
+    // if(!((fabs(elsupcl_eta[ie])<1.4442 && fabs(eldxytrk[ie])<dxy_cut && fabs(eldztrk[ie])<dz_cut)||(fabs(elsupcl_eta[ie])>1.5660 && fabs(elsupcl_eta[ie])<2.5 && fabs(eldxytrk[ie])<(2*dxy_cut) && fabs(eldztrk[ie])<(2*dz_cut)))) continue;
 
-  //  if(!((fabs(elsupcl_eta[ie])<=1.479 && fabs(elsigmaieta[ie])< 0.0126 && fabs(eldeltaetacltrkcalo[ie]) <  0.00463 && abs(elphiin[ie]) < 0.148 &&  elhitsmiss[ie]<= 2 && ((1.0 - eleoverp[ie]) / ele[ie]) < 0.209) || (fabs(elsupcl_eta[ie])>1.479 && fabs(elsigmaieta[ie])< 0.0457 && fabs(eldeltaetacltrkcalo[ie]) <  0.00814 && abs(elphiin[ie]) < 0.19 &&  elhitsmiss[ie]<= 3 && ((1.0 - eleoverp[ie]) / ele[ie]) < 0.132)) continue;
+    //  if(!((fabs(elsupcl_eta[ie])<=1.479 && fabs(elsigmaieta[ie])< 0.0126 && fabs(eldeltaetacltrkcalo[ie]) <  0.00463 && abs(elphiin[ie]) < 0.148 &&  elhitsmiss[ie]<= 2 && ((1.0 - eleoverp[ie]) / ele[ie]) < 0.209) || (fabs(elsupcl_eta[ie])>1.479 && fabs(elsigmaieta[ie])< 0.0457 && fabs(eldeltaetacltrkcalo[ie]) <  0.00814 && abs(elphiin[ie]) < 0.19 &&  elhitsmiss[ie]<= 3 && ((1.0 - eleoverp[ie]) / ele[ie]) < 0.132)) continue;
 
     Electron velectron;
 
@@ -367,6 +367,35 @@ void Anal_Leptop_PROOF::getAK8jets(std::vector<AK8Jet> &LJets, float ptcut=200, 
 
 }
 
+void Anal_Leptop_PROOF::getAK4genjets(std::vector<AK4GenJet> &Jets, float ptcut=30, float etacut=2.5, int maxsize=njetmx)
+{
+
+  for(int ijet=0; ijet<(ngenjetAK4); ijet++){
+
+    AK4GenJet sJet;
+
+    if(fabs(genjetAK4eta[ijet])>etacut /*|| (fabs(pfjetAK4eta[ijet])>1.4442 && fabs(pfjetAK4eta[ijet])<1.566)*/) continue;
+    if(genjetAK4pt[ijet]<ptcut) continue;
+
+    sJet.pt = genjetAK4pt[ijet];
+    sJet.mass = genjetAK4mass[ijet];
+    sJet.eta = genjetAK4eta[ijet];
+    sJet.phi = genjetAK4phi[ijet];
+    sJet.p4.SetPtEtaPhiM(sJet.pt,sJet.eta,sJet.phi,sJet.mass);
+    sJet.y = sJet.p4.Rapidity();
+    sJet.hadronFlavor = genjetAK4hadronflav[ijet];
+    sJet.partonFlavor = genjetAK4partonflav[ijet];
+
+    Jets.push_back(sJet);
+
+    if(int(Jets.size())>=maxsize) break;
+
+  }
+
+  sorted_by_pt(Jets);
+
+}
+
 /*void Anal_Leptop_PROOF::LeptonJet_cleaning(std::vector <Electron> velectrons,std::vector <Muon> vmuons, float dR_cut=0.4)
  * {
  * for(int imu=0; imu<(int)vmuons.size(); imu++)
@@ -579,14 +608,13 @@ void Anal_Leptop_PROOF::TopAssignment_toJet(std::vector<AK8Jet> &LJets, std::vec
 
     for(unsigned itop=0; itop<gentops.size(); itop++){
 
-      if(abs(gentops[itop].daughter[0].pdgId)==11 || abs(gentops[itop].daughter[0].pdgId)==13 || abs(gentops[itop].daughter[0].pdgId)==15){
+      if(abs(gentops[itop].daughter[0].pdgId)==11 || abs(gentops[itop].daughter[0].pdgId)==11 || abs(gentops[itop].daughter[0].pdgId)==11){
 
 	if(delta2R(LJets[ijet].p4,gentops[itop].p4)<0.8){
 	  LJets[ijet].hasleptop = true;
 	}
 
 	if((delta2R(LJets[ijet].p4,gentops[itop].daughter[0].p4)<0.8)
-	   && (delta2R(LJets[ijet].p4,gentops[itop].daughter[1].p4)<0.8)
 	   && (delta2R(LJets[ijet].p4,gentops[itop].daughter[2].p4)<0.8))
 	  {
 	    LJets[ijet].hasleptop_alldecay = true;
@@ -601,7 +629,6 @@ void Anal_Leptop_PROOF::TopAssignment_toJet(std::vector<AK8Jet> &LJets, std::vec
 	}
 
 	if((delta2R(LJets[ijet].p4,gentops[itop].daughter[0].p4)<0.8)
-	   && (delta2R(LJets[ijet].p4,gentops[itop].daughter[1].p4)<0.8)
 	   && (delta2R(LJets[ijet].p4,gentops[itop].daughter[2].p4)<0.8))
 	  {
 	    LJets[ijet].hashadtop_alldecay = true;
@@ -620,36 +647,36 @@ void Anal_Leptop_PROOF::AssignGen(std::vector<AK8Jet> &LJets, std::vector<GenPar
 
     for(auto & part: GenPartons){
 
-      if(part.status!=23 && part.status!=1) continue;
+      if(!(part.status==23 || part.status==1)) continue;
       if(!(part.fromhard)) continue;
 
       float delr=delta2R(ljet.p4,part.p4);
-      if(delr<0.7){
-	if(abs(part.pdgId)==11){
+      if(delr<0.8){
+        if(abs(part.pdgId)==11){
 	  ljet.haselectron  = true;
-	  break;
-	}
 
-	if(abs(part.pdgId)==13){
+        }
+
+        if(abs(part.pdgId)==13){
 	  ljet.hasmuon  = true;
-	  break;
-	}
 
-	if(abs(part.pdgId)==15){
+        }
+
+        if(abs(part.pdgId)==15){
 	  ljet.hastau = true;
-	  break;
-	}
+
+        }
       }
       if(delr<0.8){
 	if(((abs(part.pdgId)>=1 && abs(part.pdgId)<5) || abs(part.pdgId)==21) ){
 	  ljet.hasqg  = true;
-	  break;
-	}
 
-	if(abs(part.pdgId)==5 ){
+        }
+
+        if(abs(part.pdgId)==5 ){
 	  ljet.hasb  = true;
-	  break;
-	}
+
+        }
       }
     }
   }
@@ -739,7 +766,7 @@ void Anal_Leptop_PROOF::ReadTagger(std::vector<AK8Jet> &LJets, std::vector<Lepto
 	in_pfjetAK8NHadF = LJets[ij].NHadF;
 	in_pfjetAK8neunhadfrac = LJets[ij].neunhadfrac;
 	in_pfjetAK8subhaddiff = LJets[ij].subhaddiff;
-    in_pfjetAK8tau21 = LJets[ij].tau21;
+	in_pfjetAK8tau21 = LJets[ij].tau21;
 	in_pfjetAK8chrad = LJets[ij].chrad;
 	in_pfjetAK8sdmass = LJets[ij].sdmass;
 
@@ -772,7 +799,7 @@ void Anal_Leptop_PROOF::ReadTagger(std::vector<AK8Jet> &LJets, std::vector<Lepto
 	in_pfjetAK8matchedelfbrem = velectrons[iel].fbrem; //elfbrem[nearest];
 	in_pfjetAK8matchedeleoverp = velectrons[iel].eoverp; // eleoverp[nearest];
 	in_pfjetAK8matchedelhovere = velectrons[iel].hovere; //elhovere[nearest];
-    in_pfjetAK8matchedeldxy_sv = velectrons[iel].eldxy_sv;
+	in_pfjetAK8matchedeldxy_sv = velectrons[iel].eldxy_sv;
 
 	LJets[ij].re_tvsb = reader_electron->EvaluateMVA("BDTG method");
 
@@ -781,7 +808,7 @@ void Anal_Leptop_PROOF::ReadTagger(std::vector<AK8Jet> &LJets, std::vector<Lepto
 	in_mupfjetAK8NHadF = LJets[ij].NHadF;
 	in_mupfjetAK8neunhadfrac = LJets[ij].neunhadfrac;
 	in_mupfjetAK8subhaddiff = LJets[ij].subhaddiff;
-    in_mupfjetAK8tau21 = LJets[ij].tau21;
+	in_mupfjetAK8tau21 = LJets[ij].tau21;
 	in_mupfjetAK8chrad = LJets[ij].chrad;
 	in_mupfjetAK8sdmass = LJets[ij].sdmass;
 

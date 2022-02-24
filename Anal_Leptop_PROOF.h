@@ -1269,7 +1269,9 @@ class Anal_Leptop_PROOF : public TSelector {
    Float_t         genjetAK4eta[njetmx];
    Float_t         genjetAK4phi[njetmx];
    Float_t         genjetAK4mass[njetmx];
-   
+   Float_t         genjetAK4hadronflav[njetmx];
+   Float_t         genjetAK4partonflav[njetmx];
+
    Int_t           ngenparticles;
    Int_t           genpartstatus[npartmx];
    Int_t           genpartpdg[npartmx];
@@ -1605,7 +1607,9 @@ class Anal_Leptop_PROOF : public TSelector {
    TBranch        *b_genjetAK4pt;   //!
    TBranch        *b_genjetAK4phi;   //!
    TBranch        *b_genjetAK4mass;   //!
-      TBranch        *b_genjetAK4eta;   //!
+   TBranch        *b_genjetAK4eta;   //!
+   TBranch        *b_genjetAK4hadronflav;   //!
+   TBranch        *b_genjetAK4partonflav;   //!
    TBranch        *b_ngenparticles;   //!
    TBranch        *b_genpartstatus;   //!
    TBranch        *b_genpartpdg;   //!
@@ -1927,7 +1931,7 @@ TH1D *hist_count=0;
 
     TH1D *hist_npu_vert_true,*hist_npu_vert;
     TH1D *hist_count_lep[2];
-    TH1D *hist_count_top;
+    TH1D *hist_count_top,*hist_delptbypt[3];
     TH2D *hist_2d_pt_genlepvsb1, *hist_2d_pt_genlepvsb2, *hist_2d_pt_genlepvsb3, *hist_2d_pt_genlepvsb4, *hist_2d_pt_genlepvsb5, *hist_2d_pt_gentopvsgentop;
 
 	
@@ -2023,6 +2027,7 @@ TH1D *hist_count=0;
   virtual void    getLeptons(std::vector<Lepton> &vleptons, std::vector<Muon> vmuons, std::vector<Electron> velectrons, float pt_cut);
   virtual void    getAK4jets(std::vector<AK4Jet> &Jets, float ptcut, float etacut, bool isMC, int maxsize);
   virtual void    getAK8jets(std::vector<AK8Jet> &LJets, float ptcut, float etacut, bool isMC, int maxsize);
+  virtual void    getAK4genjets(std::vector<AK4GenJet> &Jets, float ptcut, float etacut, int maxsize);
   //virtual void    LeptonJet_cleaning(std::vector <Electron> velectrons,std::vector <Muon> vmuons, float dR_cut);
   virtual void    getPartons(std::vector<GenParton> &GenPartons, int maxsize);
   virtual void    getLHEParticles(std::vector<LHEparticle> &lheparticles, int maxsize);
@@ -2250,6 +2255,8 @@ void Anal_Leptop_PROOF::Init(TTree *tree)
    fChain->SetBranchAddress("genjetAK4phi", genjetAK4phi, &b_genjetAK4phi);
    fChain->SetBranchAddress("genjetAK4mass", genjetAK4mass, &b_genjetAK4mass);
    fChain->SetBranchAddress("genjetAK4eta", genjetAK4eta, &b_genjetAK4eta);
+   fChain->SetBranchAddress("genjetAK4hadronflav",genjetAK4hadronflav,&b_genjetAK4hadronflav);
+   fChain->SetBranchAddress("genjetAK4partonflav",genjetAK4partonflav,&b_genjetAK4partonflav);
    fChain->SetBranchAddress("ngenparticles", &ngenparticles, &b_ngenparticles);
    fChain->SetBranchAddress("genpartstatus", genpartstatus, &b_genpartstatus);
    fChain->SetBranchAddress("genpartpdg", genpartpdg, &b_genpartpdg);
